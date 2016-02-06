@@ -1,0 +1,71 @@
+<!--
+================================================================================
+    Index page for Video Annotation project.
+
+    Class: ECE 435
+================================================================================
+-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>        
+        <meta charset="UTF-8">
+        <meta http-equiv="content-script-type" content="text/javascript">
+
+        <!-- Stylesheets. -->
+        <link rel="stylesheet" type="text/css" href="styles/mainstyles.css">
+        
+        <!-- External scripts. -->
+        <script src="js/annotate_app.js"></script>
+        
+        <title>Collaborative Video Annotation Platform</title>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Videos</h2>
+        <ul>
+            <li>
+				<a href="index.html">Pocket Cat </a>
+			</li>
+			
+			<li>
+				Rabbit Life 
+			</li>
+        </ul>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main">
+
+    <!-- Video header -->
+    <h1>Rabbit Life</h1>
+        <!-- Video player -->
+        <div class="video-div" id="video-div">
+            <video id="video-player" controls>
+                <source src="videos/SampleVideo_1080x720_30mb.mp4" type="video/mp4">
+                The browser couldn't load the video tag.
+            </video>
+
+            <div class="input-area" id="input-area" style="display: none;">
+                Annotation text:
+                <form action="javascript:finalizeAnnotation();" style="display: inline;">
+                    <input type="text" id="content-text">
+                    <input type="submit" value="Finalize">
+                    <input type="button" onclick="discardAnnotation()" value="Discard">
+                </form>
+            </div>
+        </div>
+
+        <!-- Annotation list -->
+        <div class="annotation-list" id="annotation-list">
+            <!-- Generated on-demand by JS -->
+        </div>
+
+    </div>
+    
+</body>
+</html>
