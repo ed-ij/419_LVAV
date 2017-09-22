@@ -2,9 +2,7 @@
 ================================================================================
     Video Annotation Platform App JS
     
-    Class: ECE 435, 419 and 420
-	
-	Collaboration between Software Engineering and Senior Design
+    Class: ECE 435
 ================================================================================
 */
 
@@ -15,20 +13,17 @@
 */
 var annotationList = [];
 var videoPlayer = null;
-var user = "";
-var videoURL = "";
 var canvas = null;
 var currentAnnotation = null;
 var canHeight;
 var canWidth, 
 	  ctx = null,
+     
       drag = false,
-	  editting = false,
-	  list = [],
       mouseX,
       mouseY,
       closeEnough = 5,
-      dragTL = dragBL = dragTR = dragBR = false, time = 0, reloaded=false, playingSeg=false;
+      dragTL = dragBL = dragTR = dragBR = false;
 
 /*
 ================================================================================
@@ -38,20 +33,20 @@ var canWidth,
 
 document.addEventListener("DOMContentLoaded", init, false);
 window.setInterval(redraw, 250); // Call redraw every second.
-window.onbeforeunload = function(){
-	sessionStorage.time = videoPlayer.currentTime;
-	return null;
-}
-window.onload = function() {
-    var time = sessionStorage.getItem(time);
-	}
 
 /*
     Initialize the app.
 */
 function init() {
+    // Setup video links.
+    var videoLinks = document.getElementsByClassName("video-link");
+    for (var i = 0; i < videoLinks.length; i++) {
+        videoLinks[i].onclick = loadVideo(link.getAttribute("url"));
+        // TODO
+    };
+
     videoPlayer = document.getElementById("video-player");
-	videoPlayer.currentTime = sessionStorage.time;
+
     // Create drawing canvas.
     canvas = document.createElement("canvas");
     canvas.className = "canvases";
@@ -63,11 +58,10 @@ function init() {
 	
 	canWidth = canvas.width;
 	canHeight = canvas.height;
-    canvas.addEventListener('mousedown', mouseDown, false);
-    canvas.addEventListener('mouseup', mouseUp, false);
-    canvas.addEventListener('mousemove', mouseMove, false);
-	ctx = canvas.getContext('2d');
-	
+     canvas.addEventListener('mousedown', mouseDown, false);
+      canvas.addEventListener('mouseup', mouseUp, false);
+      canvas.addEventListener('mousemove', mouseMove, false);
+	  ctx = canvas.getContext('2d');
 }
 
 /*
@@ -75,6 +69,14 @@ function init() {
     General.
 ================================================================================
 */
+
+/*
+    Load a video.
+*/
+function loadVideo(url) {
+    // TODO
+}
+
 /*
     Called on mouse click.
 */
@@ -147,7 +149,7 @@ function startAnnotation(x, y) {
     videoPlayer.pause();
     currentAnnotation =  new Annotation();
     currentAnnotation.start = videoPlayer.currentTime;
-	document.getElementById("start-time").value = currentAnnotation.start;
+	document.getElementById("start-time").value = videoPlayer.currentTime;
     currentAnnotation.x = x;
     currentAnnotation.y = y;
     //redraw();
@@ -156,7 +158,6 @@ function startAnnotation(x, y) {
         currentAnnotation.x = mouseX;
         currentAnnotation.y = mouseY;
 		currentAnnotation.w = 1;
-		currentAnnotation.h = 1;
         dragBR = true;
       }
 
@@ -172,33 +173,15 @@ function finalizeAnnotation() {
         return;
     }
     var contentField = document.getElementById("content-text");
-    if(currentAnnotation.dbID == null){
-	currentAnnotation.content = contentField.value;
+    currentAnnotation.content = contentField.value;
     currentAnnotation.end = videoPlayer.currentTime;
-	currentAnnotation.dbID= -1;
-	currentAnnotation.username=user;
+	currentAnnotation.dbID=-1;
     if (currentAnnotation.content == ""
         || currentAnnotation.end - currentAnnotation.start <= 0) {
         return;
     }
-	
+
     annotationList.push(currentAnnotation);
-	}
-	else {//find in the list and update
-		if (editting = true){
-		currentAnnotation.content = contentField.value;
-		for (var i = 0; i<annotationList.length; i++){
-			if (annotationList[i].dbID == currentAnnotation.dbID){
-					//update its stuff instead
-					annotationList[i] = currentAnnotation;
-				//make sure we mark it somehow so we know it changed in the db
-					annotationList[i].changed = true;
-				}
-				
-			}
-		
-	}}
-	editting = false;
     annotationList.sort(compareAnnotations);
     currentAnnotation = null;
     hideInputField();
@@ -210,7 +193,6 @@ function finalizeAnnotation() {
 function discardAnnotation() {
     currentAnnotation = null;
     hideInputField();
-	editting = false;
     redraw();
 }
 
@@ -234,12 +216,7 @@ function drawAnnotation(ann, ctx) {
 */
 function redraw() {
 
-    var currentTime = videoPlayer.currentTime;if (editting == false){
-	document.getElementById("end-time").value = currentTime; //change this if editting so it doesn't get weird.
-	
-		
-	}
-	
+    var currentTime = videoPlayer.currentTime;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (currentAnnotation) {
@@ -252,21 +229,20 @@ function redraw() {
             drawAnnotation(ann, ctx);
         }
     }
+
     updateList();
 }
-
 function drawSquare(x, y, radius) {
       ctx.fillStyle = "#FF0000";
       ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius);
     }
 
     function drawHandles() {
-	  drawSquare(currentAnnotation.x, currentAnnotation.y, closeEnough);
+      drawSquare(currentAnnotation.x, currentAnnotation.y, closeEnough);
       drawSquare(currentAnnotation.x + currentAnnotation.w, currentAnnotation.y, closeEnough);
       drawSquare(currentAnnotation.x + currentAnnotation.w, currentAnnotation.y + currentAnnotation.h, closeEnough);
       drawSquare(currentAnnotation.x, currentAnnotation.y + currentAnnotation.h, closeEnough);
     }
-	
     function checkCloseEnough(p1, p2) {
       return Math.abs(p1 - p2) < closeEnough;
     }
@@ -277,31 +253,31 @@ function drawSquare(x, y, radius) {
 
     function mouseMove(e) {
 		if (currentAnnotation!=null){
-			pos = getPosition(canvas);
-			mouseX = e.pageX - pos.x;
-			mouseY = e.pageY - pos.y;
-			  
-			mouseX *= canvas.width/canvas.offsetWidth;
-			mouseY *= canvas.height/canvas.offsetHeight;
-		  if (dragTL) {
-			currentAnnotation.w += currentAnnotation.x - mouseX;
-			currentAnnotation.h += currentAnnotation.y - mouseY;
-			currentAnnotation.x = mouseX;
-			currentAnnotation.y = mouseY;
-		  } else if (dragTR) {
-			currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
-			currentAnnotation.h += currentAnnotation.y - mouseY;
-			currentAnnotation.y = mouseY;
-		  } else if (dragBL) {
-			currentAnnotation.w += currentAnnotation.x - mouseX;
-			currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
-			currentAnnotation.x = mouseX;
-		  } else if (dragBR) {
-			currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
-			currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
-		  }
-		  ctx.clearRect(0, 0, canvas.width, canvas.height);
-		  redraw();
+		pos = getPosition(canvas);
+      mouseX = e.pageX - pos.x;
+      mouseY = e.pageY - pos.y;
+	  
+	mouseX *= canvas.width/canvas.offsetWidth;
+ 	mouseY *= canvas.height/canvas.offsetHeight;
+      if (dragTL) {
+        currentAnnotation.w += currentAnnotation.x - mouseX;
+        currentAnnotation.h += currentAnnotation.y - mouseY;
+        currentAnnotation.x = mouseX;
+        currentAnnotation.y = mouseY;
+      } else if (dragTR) {
+        currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
+        currentAnnotation.h += currentAnnotation.y - mouseY;
+        currentAnnotation.y = mouseY;
+      } else if (dragBL) {
+        currentAnnotation.w += currentAnnotation.x - mouseX;
+        currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
+        currentAnnotation.x = mouseX;
+      } else if (dragBR) {
+        currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
+        currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      redraw();
 		}
     }
 
@@ -314,19 +290,14 @@ function updateList() {
     contentList.innerHTML = "";
     
     var list = document.createElement('ul');
-	while (list.firstChild) {
+while (list.firstChild) {
 		list.removeChild(list.firstChild);
 	}
     for (var i = 0; i < annotationList.length; i++) {
         var item = document.createElement('li');
         var current = annotationList[i];
-		var a = document.createElement('a');
-		var linkText = document.createTextNode(current.content);
-		a.appendChild(linkText);
-		a.title = "anno";
-		a.href = "javascript:playSegment("+current.start+","+current.end+")";
-        var contentString = "   [" + current.start + "-" + current.end + "] ";
-                            var userString= " (" + current.username + ")";
+        var contentString = "   [" + current.start + "-" + current.end + "] "
+                            + current.content + " (" + current.username + ")";
 		var btn = document.createElement("BUTTON");        // Create a <button> element
 		var t = document.createTextNode("X");       // Create a text node
 		btn.setAttribute("onClick", 'removeAnno('+i+')');
@@ -338,18 +309,16 @@ function updateList() {
 		ebtn.appendChild(et);                                // Append the text to <button>
 		item.appendChild(ebtn);      
 		item.appendChild(document.createTextNode(contentString));
-		item.appendChild(a);
-		item.appendChild(document.createTextNode(userString));
 		
         if (currentTime >= current.start && currentTime <= current.end) {
-			if(current.dbID == -1){
+			if(current.dbID ==-1){
 				item.style.color = "#FF0000";
-				item.style.fontWeight  = 'bold';
 			}
 			else{
-				item.style.color="#0000FF";
-				item.style.fontWeight  = 'bold';
+				item.style.color="#FFF000";
 			}
+			
+			item.style.fontWeight  = 'bold';
         }
         
         list.appendChild(item);
@@ -364,46 +333,17 @@ function updateList() {
 function removeAnno(index){
 	var sure = window.confirm("Remove this annotation? (This will remove the database entry)");
 	if (sure == true){
-		if (annotationList[index].dbID == -1){
 		annotationList.splice(index,1);
 		updateList();
-		}
-	else //this requires some mysqli
-		{     
-		var page = "deleteanno.php?q="+annotationList[index].dbID;
-		if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-           var xmlhttp = new XMLHttpRequest();
-        } 
-		else {
-            // code for IE6, IE5
-          var  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-		xmlhttp.onreadystatechange = function() {
-			if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-				// Request completed
-				annotationList.splice(index,1);
-				updateList();	
-			}
-		}
-        xmlhttp.open("POST", page, true);
-        xmlhttp.send();
-			
-		}
 	}
 }
 
 /*
 	Edit an existing annotation
 */
-function editAnno(index){ //this needs some adjustments still
+function editAnno(index){
 	currentAnnotation = annotationList[index];
-	videoPlayer.currentTime = currentAnnotation.start;
-	document.getElementById("content-text").value = currentAnnotation.content;
-	document.getElementById("start-time").value = currentAnnotation.start;
-	document.getElementById("end-time").value = currentAnnotation.end;
 	showInputField();
-	editting=true;
 }
 
 /*
@@ -411,27 +351,7 @@ function editAnno(index){ //this needs some adjustments still
 */
 function showInputField() {
     var inputArea = document.getElementById("input-area");
-	document.getElementById("input-area").value = "";
     inputArea.style.display = "block";
-}
-
-function startbut() {
-	document.getElementById("start-time").value = videoPlayer.currentTime;
-	currentAnnotation.start = videoPlayer.currentTime;
-}
-
-function endbut() {
-	document.getElementById("end-time").value =videoPlayer.currentTime;
-	currentAnnotation.end = videoPlayer.currentTime;
-}
-
-function playSegment(start, end){	
-	videoPlayer.pause();
-	var source = videoPlayer.src;
-	videoPlayer.src = videoURL+"#t="+start+","+end;
-	console.log(videoURL);
-	videoPlayer.play();
-	playingSeg = true;
 }
 
 /*
@@ -439,9 +359,6 @@ function playSegment(start, end){
 */
 function hideInputField() {
     var inputArea = document.getElementById("input-area");
-	document.getElementById("start-time").value = "";
-	document.getElementById("end-time").value = "";
-	document.getElementById("content-text").value = "";
     inputArea.style.display = "none";
 }
 
@@ -508,7 +425,6 @@ function setCookie(key, value, exdays) {
     setCookie(key, "", 0);
 }
 */
-
 /*
 ================================================================================
     Annotation class.
@@ -524,25 +440,4 @@ function Annotation() {
     var w = 0;
     var h = 0;
     var content = "";
-	var changed = false;
-}
-
-/*
-================================================================================
-	Saving and Loading Annotation Content Function List.
-================================================================================
-*/
-function LoadAnnotations(list){
-	/*sqli function to pull annotations for this video ID*/
-	temp = new Annotation();
-	temp.username= list.user_name;
-	temp.dbID=parseInt(list.annotation_id);
-	temp.start=list.annotation_start_time;
-	temp.end=list.annotation_end_time;
-	temp.x= parseInt(list.annotation_x);
-	temp.y= parseInt(list.annotation_y);
-	temp.w = parseInt(list.annotation_box_width);
-	temp.h= parseInt(list.annotation_box_height);
-	temp.content=list.annotation_text;
-	annotationList.push(temp);
 }
