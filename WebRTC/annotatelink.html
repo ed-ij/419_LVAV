@@ -7,7 +7,7 @@
 <?php include("auth.php"); //include auth.php file on all secure pages ?>
 
     <script>
-        var audioSource = context.createMediaElementSource(document.getElementById("v"));
+        var audioSource = AudioContext.createMediaElementSource(document.getElementById("v"));
         var filter = context.createBiquadFilter();
         audioSource.connect(filter);
 		filter.connect(context.destination);
@@ -20,40 +20,40 @@
         <script>
             document.createElement('article');
         </script>
-		
+
         <script src="js/firebase.js"> </script>
         <script src="js/MediaStreamer.js"> </script>
         <script src="js/annotate_app.js"></script>
 
     <body><div class="form">
 <p>This is a secured page.</p>
-<?php 
+<?php
       $pid = $_GET['pid'];
-  $result = mysqli_query($link,"       
-    SELECT       
-      src_video_location      
-    FROM `videos`       
-    WHERE video_data_id = $pid       
+  $result = mysqli_query($link,"
+    SELECT
+      src_video_location
+    FROM `videos`
+    WHERE video_data_id = $pid
   ");
   while($row = mysqli_fetch_assoc($result)){
     foreach($row as $cname => $cvalue){
-   
-    echo "<table><tr><td align='center'>       
-      <br />       
-      <video controls src=$cvalue border='0'       
-         />       
-      <br />       
-      </video>  
-      </td></tr></table";       
+
+    echo "<table><tr><td align='center'>
+      <br />
+      <video controls src=$cvalue border='0'
+         />
+      <br />
+      </video>
+      </td></tr></table";
  }
     print "\r\n";
 }?>
         <article>
             <header style="text-align: center;">
                 <h1> Replace this with Video Title</h1>
-                <p> Annotation Web Application </p>            
+                <p> Annotation Web Application </p>
             </header>
-			
+
             <section class="experiment" style="text-align: center;">
 				<div id="video-div" class="video-div">
                 <video id="video-player" controls>
@@ -82,7 +82,7 @@
             <!-- Generated on-demand by JS -->
         </div>
 				</section>
-			
+
             <script>
                 var channel = location.href.replace( /\/|:|#|%|\.|\[|\]/g , '');
 
@@ -100,7 +100,7 @@
                     // pass shared chunks/data/streaming-packets over "onstream"
                     streamer.onstream(stream);
                 });
-                
+
                 firebase.onDisconnect().remove();
 
                 // new MediaStream(socket, outputVideo)
@@ -111,7 +111,7 @@
                     streamer.stream(this.files[0]);
                 };
             </script>
-            
+
         </article>
 
     </body>

@@ -4,6 +4,7 @@
     <head>
     <title>this'll change</title>
     <script>
+        var context = new webkitAudioContext();
         var audioSource = context.createMediaElementSource(document.getElementById("v"));
         var filter = context.createBiquadFilter();
         audioSource.connect(filter);
@@ -18,7 +19,7 @@
             document.createElement('article');
             document.createElement('footer');
         </script>
-		
+
         <script src="/firebase.js"> </script>
         <script src="/MediaStreamer.js"> </script>
         <script src="annotate_app.js"></script>
@@ -28,9 +29,9 @@
         <article>
             <header style="text-align: center;">
                 <h1> Replace this with Video Title</h1>
-                <p> Annotation Web Application </p>            
+                <p> Annotation Web Application </p>
             </header>
-			
+
             <section class="experiment" style="text-align: center;">
 				<div id="video-div" class="video-div">
                 <video id="video-player" controls>
@@ -59,7 +60,7 @@
             <!-- Generated on-demand by JS -->
         </div>
 				</section>
-			
+
             <script>
                 var channel = location.href.replace( /\/|:|#|%|\.|\[|\]/g , '');
 
@@ -77,7 +78,7 @@
                     // pass shared chunks/data/streaming-packets over "onstream"
                     streamer.onstream(stream);
                 });
-                
+
                 firebase.onDisconnect().remove();
 
                 // new MediaStream(socket, outputVideo)
@@ -88,7 +89,7 @@
                     streamer.stream(this.files[0]);
                 };
             </script>
-            
+
         </article>
 
     </body>
