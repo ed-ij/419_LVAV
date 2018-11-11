@@ -16,3 +16,7 @@ The LVAV project will consist of developing a software product to automate video
 8) *OPTIONAL I Think* Install Python 3
 9) *NOT CURRENTLY REQUIRED I DON'T THINK* Install opencv in npm using https://www.npmjs.com/package/opencv-build
 10) WebRTC is an API so doesn't need to be installed
+
+-----------------USAGE-----------------
+
+V0.1.0Run WebRTC/annotate.html for the annotation page.
