@@ -1,15 +1,13 @@
 ﻿
 <!DOCTYPE html>
-<!-- V0.0.1 -->
 <html lang="en">
     <head>
     <title>this'll change</title>
     <script>
-        var context = new webkitAudioContext();
         var audioSource = context.createMediaElementSource(document.getElementById("v"));
         var filter = context.createBiquadFilter();
         audioSource.connect(filter);
-		filter.connect(context.destination);
+		    filter.connect(context.destination);
     </script>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="utf-8">
@@ -22,7 +20,7 @@
         </script>
 
         <script src="/firebase.js"> </script>
-        <script src="/MediaStreamer.js"> </script>
+        <script src="MediaStreamer.js"> </script>
         <script src="annotate_app.js"></script>
     </head>
 

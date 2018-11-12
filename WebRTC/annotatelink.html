@@ -7,7 +7,7 @@
 <?php include("auth.php"); //include auth.php file on all secure pages ?>
 
     <script>
-        var audioSource = AudioContext.createMediaElementSource(document.getElementById("v"));
+        var audioSource = context.createMediaElementSource(document.getElementById("v"));
         var filter = context.createBiquadFilter();
         audioSource.connect(filter);
 		filter.connect(context.destination);
