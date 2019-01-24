@@ -4,14 +4,16 @@ AOLME has determined that their current manual method of analyzing video recordi
 
 The LVAV project will consist of developing a software product to automate video annotation of student engagement activities (reading, writing, talking).
 
------------------SETUP V1 -----------------
+## Setup
+
+### Method 1
 
 1) Install Node.js from https://nodejs.org/en/ (Tested with LTS v10.15.0)
 2) ***OPTIONAL*** Install Atom for a nice code editing experience from https://atom.io/
 3) Install Git from https://git-scm.com/download/win
 4) Install Github Desktop from https://desktop.github.com/
 
------------------SETUP V2 -----------------
+### Method 2 (Recommended)
 
 1) Install Node.js from https://nodejs.org/en/ (Tested with LTS v10.15.0)
 2) Install Atom for a nice code editing experience from https://atom.io/
@@ -25,7 +27,7 @@ The LVAV project will consist of developing a software product to automate video
 ```
 6) Replace the CAPITALISED bits with your actual info. Save this in your user area as .gitconfig
 
------------------OPTIONAL ADDITIONAL TOOL SETUP-----------------
+#### OPTIONAL ADDITIONAL TOOL SETUP
 
 ***OpenCV*** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
 ***OpenCV*** Install cmake from https://cmake.org/download/
@@ -33,7 +35,7 @@ The LVAV project will consist of developing a software product to automate video
 ***Might be needed*** Install Python 3
 ***OpenCV*** Install opencv in npm using https://www.npmjs.com/package/opencv-build
 
------------------USAGE-----------------
+## USAGE
 
 Run WebRTC/annotate.html for the annotation page.
 
@@ -47,6 +49,15 @@ v 0.0.1 Functionality:
   * Annotation data cannot be exported.
   * Lots of console errors.
   
-  Browser Support:
+ ### Support
+ 
+ #### Browsers:
   * Edge: works well
   * Chrome: Video can be scrubbed through but not 'played'
+  * Firefox: Untested
+  * Safari: Untested
+  
+#### Operating Systems:
+  * Windows: Works as expected
+  * MacOS: Untested
+  * Linux: Untested
