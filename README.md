@@ -6,7 +6,7 @@ The LVAV project will consist of developing a software product to automate video
 
 -----------------SETUP-----------------
 
-1) Install Node.js from https://nodejs.org/en/
+1) Install Node.js from https://nodejs.org/en/ (Tested with LTS v10.15.0)
 2) ***OPTIONAL*** Install Atom for a nice code editing experience from https://atom.io/
 3) Install Git from https://git-scm.com/download/win
 4) Install Github Desktop from https://desktop.github.com/
