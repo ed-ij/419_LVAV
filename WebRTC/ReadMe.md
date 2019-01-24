@@ -8,9 +8,9 @@ v 0.0.1.2
   * Mostly functional as intended, needs some cleaning up & commenting
   * The `edit list entry` button does not work in an intuitive/helpful way
   * Part of the list entry is displayed as `(undefined)`
-  * **Need to be able to export the list
-  * **Need to be able to choose the video to annotate
-  * **Need to be able to select from a list of categories rather than having to type it every time
+  * **Need to be able to export the list**
+  * **Need to be able to choose the video to annotate**
+  * **Need to be able to select from a list of categories rather than having to type it every time**
 
 ### annotate.html
 
@@ -19,9 +19,9 @@ v 0.0.1.2
 v 0.0.1.2 
   * Mostly functional as intended, needs some commenting
   * The firebase and media streaming scripts need to be investigated and potentially linked
-  * **Need to be able to export the list
-  * **Need to be able to choose the video to annotate
-  * **Need to be able to select from a list of categories rather than having to type it every time
+  * **Need to be able to export the list**
+  * **Need to be able to choose the video to annotate**
+  * **Need to be able to select from a list of categories rather than having to type it every time**
           
 ### mainstyles.css
 
