@@ -37,7 +37,11 @@ The LVAV project will consist of developing a software product to automate video
 
 Run WebRTC/annotate.html for the annotation page.
 
-V0.0.1 Functionality:
+v 0.0.1.2 Updates
+  * Fixed all console errors
+  * Interface layout slightly improved
+
+v 0.0.1 Functionality:
   * Annotation of a single video.
   * Annotation method is effective but non intuitive.
   * Annotation data cannot be exported.
