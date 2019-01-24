@@ -2,9 +2,9 @@
 ================================================================================
     Video Annotation Platform App JS
     Based on a project by Abby
-    
+
     Class: ECE 419
-    
+
     V0.0.1
 ================================================================================
 */
@@ -19,9 +19,9 @@ var videoPlayer = null;
 var canvas = null;
 var currentAnnotation = null;
 var canHeight;
-var canWidth, 
+var canWidth,
 	  ctx = null,
-     
+
       drag = false,
       mouseX,
       mouseY,
@@ -58,7 +58,7 @@ function init() {
     videoDiv.appendChild(canvas);
     videoPlayer.addEventListener("play", redraw);
     //canvas.addEventListener("click", actOnClick, false);
-	
+
 	canWidth = canvas.width;
 	canHeight = canvas.height;
      canvas.addEventListener('mousedown', mouseDown, false);
@@ -86,17 +86,17 @@ function loadVideo(url) {
 function mouseDown(e) {
     // Calculate relative mouse coordinates.
     var pos = getPosition(canvas);
-	
+
       mouseX = e.pageX - pos.x;
       mouseY = e.pageY - pos.y;
-	  
+
     /*var xPos = event.pageX - pos.x;
     var yPos = event.pageY - pos.y;
 	*/
 	mouseX *= canvas.width/canvas.offsetWidth;
  	mouseY *= canvas.height/canvas.offsetHeight;
 
-	
+
     if (currentAnnotation == null) {
         startAnnotation(mouseX, mouseY);
     }
@@ -128,7 +128,6 @@ function mouseDown(e) {
     Get element position.
 
     Source: http://www.kirupa.com/html5/get_element_position_using_javascript.htm
-	Adapted from ECE435
 */
 function getPosition(element) {
     var xPosition = 0;
@@ -139,7 +138,7 @@ function getPosition(element) {
         yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
         element = element.offsetParent;
     }
-	
+
     return { x: xPosition, y: yPosition };
 }
 
@@ -164,7 +163,7 @@ function startAnnotation(x, y) {
         dragBR = true;
       }
 
-    redraw();  
+    redraw();
 	showInputField();
 }
 
@@ -178,7 +177,7 @@ function finalizeAnnotation() {
     var contentField = document.getElementById("content-text");
     currentAnnotation.content = contentField.value;
     currentAnnotation.end = videoPlayer.currentTime;
-	currentAnnotation.dbID=-1;
+	  currentAnnotation.dbID=-1;
     if (currentAnnotation.content == ""
         || currentAnnotation.end - currentAnnotation.start <= 0) {
         return;
@@ -187,7 +186,6 @@ function finalizeAnnotation() {
     annotationList.push(currentAnnotation);
     annotationList.sort(compareAnnotations);
     currentAnnotation = null;
-    hideInputField();
 }
 
 /*
@@ -195,7 +193,6 @@ function finalizeAnnotation() {
 */
 function discardAnnotation() {
     currentAnnotation = null;
-    hideInputField();
     redraw();
 }
 
@@ -211,7 +208,7 @@ function drawAnnotation(ann, ctx) {
 	  ctx.fillText(ann.content, (ann.x-5),(ann.y-5));
       ctx.stroke();
 		if (currentAnnotation!=null){
-		drawHandles();  }	
+		drawHandles();  }
 }
 
 /*
@@ -259,7 +256,7 @@ function drawSquare(x, y, radius) {
 		pos = getPosition(canvas);
       mouseX = e.pageX - pos.x;
       mouseY = e.pageY - pos.y;
-	  
+
 	mouseX *= canvas.width/canvas.offsetWidth;
  	mouseY *= canvas.height/canvas.offsetHeight;
       if (dragTL) {
@@ -291,7 +288,7 @@ function updateList() {
     var currentTime = videoPlayer.currentTime;
     var contentList = document.getElementById("annotation-list");
     contentList.innerHTML = "";
-    
+
     var list = document.createElement('ul');
 while (list.firstChild) {
 		list.removeChild(list.firstChild);
@@ -305,14 +302,14 @@ while (list.firstChild) {
 		var t = document.createTextNode("X");       // Create a text node
 		btn.setAttribute("onClick", 'removeAnno('+i+')');
 		btn.appendChild(t);                                // Append the text to <button>
-		item.appendChild(btn);      
+		item.appendChild(btn);
 		var ebtn = document.createElement("BUTTON");        // Create a <button> element
 		var et = document.createTextNode("Edit");       // Create a text node
 		ebtn.setAttribute("onClick", 'editAnno('+i+')');
 		ebtn.appendChild(et);                                // Append the text to <button>
-		item.appendChild(ebtn);      
+		item.appendChild(ebtn);
 		item.appendChild(document.createTextNode(contentString));
-		
+
         if (currentTime >= current.start && currentTime <= current.end) {
 			if(current.dbID ==-1){
 				item.style.color = "#FF0000";
@@ -320,10 +317,10 @@ while (list.firstChild) {
 			else{
 				item.style.color="#FFF000";
 			}
-			
+
 			item.style.fontWeight  = 'bold';
         }
-        
+
         list.appendChild(item);
     }
 
@@ -331,7 +328,7 @@ while (list.firstChild) {
 }
 
 /*
-	Removes an annotation from the list 
+	Removes an annotation from the list
 */
 function removeAnno(index){
 	var sure = window.confirm("Remove this annotation? (This will remove the database entry)");
@@ -380,7 +377,7 @@ function compareAnnotations(a, b) {
 
 /*
     Create a cookie.
-    
+
     Params:
         key     Cookie key.
         value   Cookie value.
@@ -396,10 +393,10 @@ function setCookie(key, value, exdays) {
 
 /*
     Retrieve a cookie value by key.
-    
+
     Params:
         key     Cookie key.
-    
+
     Return:
         Value for the specified cookie key.
 */
@@ -420,7 +417,7 @@ function setCookie(key, value, exdays) {
 
 /*
     Clear a cookie.
-    
+
     Params:
         key     Cookie key to clear.
 */

@@ -1,14 +1,14 @@
-﻿
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    <title>this'll change</title>
-    <script>
+    <title>Temp Page Title</title>
+<!--    <script>
         var audioSource = context.createMediaElementSource(document.getElementById("v"));
         var filter = context.createBiquadFilter();
         audioSource.connect(filter);
 		    filter.connect(context.destination);
     </script>
+-->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -27,14 +27,15 @@
     <body>
         <article>
             <header style="text-align: center;">
-                <h1> Replace this with Video Title</h1>
-                <p> Annotation Web Application </p>
+                <h1> Temp Video Title</h1>
+                <p> Video Annotation and Visualisation Application </p>
             </header>
 
             <section class="experiment" style="text-align: center;">
 				<div id="video-div" class="video-div">
                 <video id="video-player" controls>
-                <source src="phpE7B2.tmp" type="video/mp4"></video>
+                  <source src="DSC_0557.mov" type="video/mp4"></video>
+<!--                <source src="phpE7B2.tmp" type="video/mp4"></video> -->
                 </div>
 <!--				<div>
                     <a href="phpE7B2.tmp" title="Download WebM file to stream as pre-recorded media" download="chrome.webm" target="_blank">Download WebM video</a>
@@ -43,7 +44,7 @@
                     <a href="phpE7B2.tmp" title="Download WebM file to stream as pre-recorded media" download="chrome.mp4" target="_blank">Download MP4 video</a>
                 </div>
 -->
-            <div class="input-area" id="input-area" style="display: none;">
+            <div class="input-area" id="input-area">
                 Annotation text:
                 <form action="javascript:finalizeAnnotation();" style="display: inline;">
                     <input type="text" id="content-text">
@@ -51,8 +52,7 @@
                     <input type="button" onclick="discardAnnotation()" value="Discard">
 					<p> Start time: <input type="text" id="start-time"> End Time: <input type="text" id="end-time"></p>
                 </form>
-            </div>
-        </div>
+          </div>
 
         <!-- Annotation list -->
         <div class="annotation-list" id="annotation-list">
@@ -60,7 +60,7 @@
         </div>
 				</section>
 
-            <script>
+<!--            <script>
                 var channel = location.href.replace( /\/|:|#|%|\.|\[|\]/g , '');
 
                 // using firebase for sharing stream-packets i.e. chunks
@@ -88,8 +88,7 @@
                     streamer.stream(this.files[0]);
                 };
             </script>
-
-        </article>
+-->        </article>
 
     </body>
 </html>
