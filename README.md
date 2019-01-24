@@ -15,12 +15,14 @@ The LVAV project will consist of developing a software product to automate video
 
 1) Install Node.js from https://nodejs.org/en/ (Tested with LTS v10.15.0)
 2) Install Atom for a nice code editing experience from https://atom.io/
-3) In Atom hit Ctrl+Shift+P and type GitHub: Clone
+3) In Atom hit `Ctrl+Shift+P` and type `GitHub: Clone`
 4) Paste https://github.com/edward-ij/419_LsVAV.git in the "clone from" box and choose where you want it on your computer.
 5) Create a new file and paste the following
+```
 [user]
         name = <NAME>
         email = <EMAIL>
+```
 6) Replace the CAPITALISED bits with your actual info. Save this in your user area as .gitconfig
 
 -----------------OPTIONAL ADDITIONAL TOOL SETUP-----------------
