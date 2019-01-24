@@ -10,12 +10,6 @@ The LVAV project will consist of developing a software product to automate video
 2) ***OPTIONAL*** Install Atom for a nice code editing experience from https://atom.io/
 3) Install Git from https://git-scm.com/download/win
 4) Install Github Desktop from https://desktop.github.com/
-5) ***Needed ONLY for OpenCV*** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
-6) ***Needed ONLY for OpenCV*** Install cmake from https://cmake.org/download/
-7) ***Needed ONLY for OpenCV*** Ensure you have Visual Studio Build tools installed with Windows SDK version 8.1
-8) ***OPTIONAL I THINK*** Install Python 3
-9) ***NOT CURRENTLY REQUIRED I DON'T THINK*** Install opencv in npm using https://www.npmjs.com/package/opencv-build
-10) WebRTC is an API so doesn't need to be installed
 
 -----------------SETUP V2 -----------------
 
@@ -23,12 +17,19 @@ The LVAV project will consist of developing a software product to automate video
 2) Install Atom for a nice code editing experience from https://atom.io/
 3) In Atom hit Ctrl+Shift+P and type GitHub: Clone
 4) Paste https://github.com/edward-ij/419_LsVAV.git in the "clone from" box and choose where you want it on your computer.
-5) ***Needed ONLY for OpenCV*** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
-6) ***Needed ONLY for OpenCV*** Install cmake from https://cmake.org/download/
-7) ***Needed ONLY for OpenCV*** Ensure you have Visual Studio Build tools installed with Windows SDK version 8.1
-8) ***OPTIONAL I THINK*** Install Python 3
-9) ***NOT CURRENTLY REQUIRED I DON'T THINK*** Install opencv in npm using https://www.npmjs.com/package/opencv-build
-10) WebRTC is an API so doesn't need to be installed
+5) Create a new file and paste the following
+[user]
+        name = <NAME>
+        email = <EMAIL>
+6) Replace the CAPITALISED bits with your actual info. Save this in your user area as .gitconfig
+
+-----------------OPTIONAL ADDITIONAL TOOL SETUP-----------------
+
+***OpenCV*** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
+***OpenCV*** Install cmake from https://cmake.org/download/
+***OpenCV*** Ensure you have Visual Studio Build tools installed with Windows SDK version 8.1
+***Might be needed*** Install Python 3
+***OpenCV*** Install opencv in npm using https://www.npmjs.com/package/opencv-build
 
 -----------------USAGE-----------------
 
