@@ -27,7 +27,7 @@ The LVAV project will consist of developing a software product to automate video
 ```
 6) Replace the CAPITALISED bits with your actual info. Save this in your user area as .gitconfig
 
-#### OPTIONAL ADDITIONAL TOOL SETUP
+#### *Optional Additional Tool Setup*
 
 ***OpenCV*** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
 ***OpenCV*** Install cmake from https://cmake.org/download/
@@ -35,7 +35,7 @@ The LVAV project will consist of developing a software product to automate video
 ***Might be needed*** Install Python 3
 ***OpenCV*** Install opencv in npm using https://www.npmjs.com/package/opencv-build
 
-## USAGE
+## Usage
 
 Run WebRTC/annotate.html for the annotation page.
 
