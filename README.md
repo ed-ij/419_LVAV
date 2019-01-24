@@ -1,3 +1,5 @@
+## Info
+
 The Advancing Out-of-School Learning in Mathematics and Engineering (AOLME) project is an interdisciplinary effort from faculty with areas of expertise in bilingual education, mathematics education, and electrical and computer engineering.
 
 AOLME has determined that their current manual method of analyzing video recordings of classroom interaction is very time consuming and inefficient. In order to address this inefficiency, AOLME has approved a project called “Large-scale Video Annotation and Visualization (LVAV).
@@ -29,11 +31,11 @@ The LVAV project will consist of developing a software product to automate video
 
 #### *Optional Additional Tool Setup*
 
-***OpenCV*** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
-***OpenCV*** Install cmake from https://cmake.org/download/
-***OpenCV*** Ensure you have Visual Studio Build tools installed with Windows SDK version 8.1
-***Might be needed*** Install Python 3
-***OpenCV*** Install opencv in npm using https://www.npmjs.com/package/opencv-build
+**OpenCV** Install Emscripten by downloading from and following the instructions found here https://github.com/juj/emsdk
+**OpenCV** Install cmake from https://cmake.org/download/
+**OpenCV** Ensure you have Visual Studio Build tools installed with Windows SDK version 8.1
+**Might be needed** Install Python 3
+**OpenCV** Install opencv in npm using https://www.npmjs.com/package/opencv-build
 
 ## Usage
 
@@ -43,7 +45,7 @@ v 0.0.1.2 Updates
   * Fixed all console errors
   * Interface layout slightly improved
 
-v 0.0.1 Functionality:
+v 0.0.1 Initial Functionality
   * Annotation of a single video.
   * Annotation method is effective but non intuitive.
   * Annotation data cannot be exported.
