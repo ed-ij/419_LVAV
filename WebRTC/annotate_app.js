@@ -177,6 +177,7 @@ function finalizeAnnotation() {
     var contentField = document.getElementById("content-text");
     currentAnnotation.content = contentField.value;
     currentAnnotation.end = videoPlayer.currentTime;
+		currentAnnotation.username = "defaultUser";
 	  currentAnnotation.dbID=-1;
     if (currentAnnotation.content == ""
         || currentAnnotation.end - currentAnnotation.start <= 0) {
