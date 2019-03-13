@@ -41,6 +41,8 @@ window.setInterval(redraw, 250); // Call redraw every second.
     Initialize the app.
 */
 function init() {
+		var database = firebase.database();
+
     // Setup video links.
     var videoLinks = document.getElementsByClassName("video-link");
     for (var i = 0; i < videoLinks.length; i++) {
@@ -154,9 +156,7 @@ function startAnnotation(x, y) {
 	document.getElementById("start-time").value = videoPlayer.currentTime;
     currentAnnotation.x = x;
     currentAnnotation.y = y;
-    //redraw();
-          // if there isn't a rect yet
-      if (currentAnnotation.w === undefined) {
+    if (currentAnnotation.w === undefined) {
         currentAnnotation.x = mouseX;
         currentAnnotation.y = mouseY;
 		currentAnnotation.w = 1;
@@ -177,6 +177,7 @@ function finalizeAnnotation() {
     var contentField = document.getElementById("content-text");
     currentAnnotation.content = contentField.value;
     currentAnnotation.end = videoPlayer.currentTime;
+		currentAnnotation.username = "defaultUser";
 	  currentAnnotation.dbID=-1;
     if (currentAnnotation.content == ""
         || currentAnnotation.end - currentAnnotation.start <= 0) {
@@ -185,6 +186,30 @@ function finalizeAnnotation() {
 
     annotationList.push(currentAnnotation);
     annotationList.sort(compareAnnotations);
+    currentAnnotation = null;
+}
+
+function finalizeDatabaseAnnotation() {
+    if (!currentAnnotation) {
+        return;
+    }
+    var contentField = document.getElementById("content-text");
+		if (currentAnnotation.content == ""
+        || videoplayer.currentTime - currentAnnotation.start <= 0) {
+        return;
+    database.ref('annotations/'+ currentAnnotation.dbID).set({
+			category: contentField.value,
+			start: currentAnnotation.start,
+    	end: videoPlayer.currentTime,
+			x: currentAnnotation.x,
+			y: currentAnnotation.y,
+			w: currentAnnotation.w,
+			h: currentAnnotation.h,
+			username: "defaultUser"
+		});
+		return;
+    }
+		// need to rewrite the annotation list function to pull from the database
     currentAnnotation = null;
 }
 
@@ -213,6 +238,7 @@ function drawAnnotation(ann, ctx) {
 
 /*
     Redraw the canvas. Called automatically every second and on certain events.
+		**Will need to be rewritten to work with the firebase database annotations
 */
 function redraw() {
 
@@ -232,57 +258,61 @@ function redraw() {
 
     updateList();
 }
+
 function drawSquare(x, y, radius) {
       ctx.fillStyle = "#FF0000";
       ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius);
     }
 
-    function drawHandles() {
+function drawHandles() {
       drawSquare(currentAnnotation.x, currentAnnotation.y, closeEnough);
       drawSquare(currentAnnotation.x + currentAnnotation.w, currentAnnotation.y, closeEnough);
       drawSquare(currentAnnotation.x + currentAnnotation.w, currentAnnotation.y + currentAnnotation.h, closeEnough);
       drawSquare(currentAnnotation.x, currentAnnotation.y + currentAnnotation.h, closeEnough);
     }
-    function checkCloseEnough(p1, p2) {
+function checkCloseEnough(p1, p2) {
       return Math.abs(p1 - p2) < closeEnough;
     }
 
-    function mouseUp() {
+function mouseUp() {
       dragTL = dragTR = dragBL = dragBR = false;
     }
 
-    function mouseMove(e) {
-		if (currentAnnotation!=null){
-		pos = getPosition(canvas);
-      mouseX = e.pageX - pos.x;
-      mouseY = e.pageY - pos.y;
-
-	mouseX *= canvas.width/canvas.offsetWidth;
- 	mouseY *= canvas.height/canvas.offsetHeight;
-      if (dragTL) {
-        currentAnnotation.w += currentAnnotation.x - mouseX;
-        currentAnnotation.h += currentAnnotation.y - mouseY;
-        currentAnnotation.x = mouseX;
-        currentAnnotation.y = mouseY;
-      } else if (dragTR) {
-        currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
-        currentAnnotation.h += currentAnnotation.y - mouseY;
-        currentAnnotation.y = mouseY;
-      } else if (dragBL) {
-        currentAnnotation.w += currentAnnotation.x - mouseX;
-        currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
-        currentAnnotation.x = mouseX;
-      } else if (dragBR) {
-        currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
-        currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
-      }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      redraw();
-		}
+function mouseMove(e) {
+			if (currentAnnotation!=null){
+				pos = getPosition(canvas);
+      	mouseX = e.pageX - pos.x;
+      	mouseY = e.pageY - pos.y;
+				mouseX *= canvas.width/canvas.offsetWidth;
+ 				mouseY *= canvas.height/canvas.offsetHeight;
+      	if (dragTL) {
+        	currentAnnotation.w += currentAnnotation.x - mouseX;
+        	currentAnnotation.h += currentAnnotation.y - mouseY;
+        	currentAnnotation.x = mouseX;
+        	currentAnnotation.y = mouseY;
+      	}
+				else if (dragTR) {
+        	currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
+        	currentAnnotation.h += currentAnnotation.y - mouseY;
+        	currentAnnotation.y = mouseY;
+      	}
+				else if (dragBL) {
+        	currentAnnotation.w += currentAnnotation.x - mouseX;
+        	currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
+        	currentAnnotation.x = mouseX;
+      	}
+				else if (dragBR) {
+        	currentAnnotation.w = Math.abs(currentAnnotation.x - mouseX);
+        	currentAnnotation.h = Math.abs(currentAnnotation.y - mouseY);
+      	}
+      	ctx.clearRect(0, 0, canvas.width, canvas.height);
+      	redraw();
+			}
     }
 
 /*
-    Update the annotation list.
+    Update the annotation list
+		**Will need to be rewritten to work with the firebase database annotations
 */
 function updateList() {
     var currentTime = videoPlayer.currentTime;
@@ -290,45 +320,43 @@ function updateList() {
     contentList.innerHTML = "";
 
     var list = document.createElement('ul');
-while (list.firstChild) {
-		list.removeChild(list.firstChild);
-	}
+		while (list.firstChild) {
+			list.removeChild(list.firstChild);
+		}
     for (var i = 0; i < annotationList.length; i++) {
         var item = document.createElement('li');
         var current = annotationList[i];
         var contentString = "   [" + current.start + "-" + current.end + "] "
                             + current.content + " (" + current.username + ")";
-		var btn = document.createElement("BUTTON");        // Create a <button> element
-		var t = document.createTextNode("X");       // Create a text node
-		btn.setAttribute("onClick", 'removeAnno('+i+')');
-		btn.appendChild(t);                                // Append the text to <button>
-		item.appendChild(btn);
-		var ebtn = document.createElement("BUTTON");        // Create a <button> element
-		var et = document.createTextNode("Edit");       // Create a text node
-		ebtn.setAttribute("onClick", 'editAnno('+i+')');
-		ebtn.appendChild(et);                                // Append the text to <button>
-		item.appendChild(ebtn);
-		item.appendChild(document.createTextNode(contentString));
+				var btn = document.createElement("BUTTON");        // Create a <button> element
+				var t = document.createTextNode("X");       // Create a text node
+				btn.setAttribute("onClick", 'removeAnno('+i+')');
+				btn.appendChild(t);                                // Append the text to <button>
+				item.appendChild(btn);
+				var ebtn = document.createElement("BUTTON");        // Create a <button> element
+				var et = document.createTextNode("Edit");       // Create a text node
+				ebtn.setAttribute("onClick", 'editAnno('+i+')');
+				ebtn.appendChild(et);                                // Append the text to <button>
+				item.appendChild(ebtn);
+				item.appendChild(document.createTextNode(contentString));
 
         if (currentTime >= current.start && currentTime <= current.end) {
-			if(current.dbID ==-1){
-				item.style.color = "#FF0000";
-			}
-			else{
-				item.style.color="#FFF000";
-			}
-
-			item.style.fontWeight  = 'bold';
+					if(current.dbID ==-1){
+						item.style.color = "#FF0000";
+					}
+					else{
+						item.style.color="#FFF000";
+					}
+					item.style.fontWeight  = 'bold';
         }
-
-        list.appendChild(item);
-    }
-
-    contentList.appendChild(list);
-}
+				list.appendChild(item);
+    	}
+    	contentList.appendChild(list);
+		}
 
 /*
 	Removes an annotation from the list
+	**Will need to be rewritten to work with the firebase database annotations
 */
 function removeAnno(index){
 	var sure = window.confirm("Remove this annotation? (This will remove the database entry)");
@@ -340,6 +368,7 @@ function removeAnno(index){
 
 /*
 	Edit an existing annotation
+	**Will need to be rewritten to work with the firebase database annotations
 */
 function editAnno(index){
 	currentAnnotation = annotationList[index];
@@ -364,6 +393,7 @@ function hideInputField() {
 
 /*
     Comparator for sorting the annotation array.
+		**Will need to be rewritten to work with the firebase database annotations
 */
 function compareAnnotations(a, b) {
     return a.start - b.start;
@@ -431,7 +461,7 @@ function setCookie(key, value, exdays) {
 ================================================================================
 */
 function Annotation() {
-    var username = "";
+    var username = "defaultUser";
 	var dbID = -1;
     var start = 0;
     var end = 0;
