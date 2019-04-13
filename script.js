@@ -98,9 +98,6 @@ if (supportsVideo) {
     currentTime.style.fontSize = "20px";
     currentTime.style.padding = "5px";
 
-
-
-
     var vidDur = document.getElementById('vid-duration');
     vidDur.style.position = "relative";
     vidDur.style.display = "inline-block";
@@ -108,7 +105,6 @@ if (supportsVideo) {
     vidDur.style.backgroundColor = "black";
     vidDur.style.fontSize = "20px";
     vidDur.style.padding = "5px";
-
     vidDur.style.left = "5px";
 
 
@@ -217,6 +213,9 @@ if (supportsVideo) {
         // Add event listeners for video specific events
         video.addEventListener('play', function() {
             changeButtonState('playpause');
+            video.ontimeupdate = function(){
+                document.getElementById('current-time').innerHTML = video.currentTime;
+            }
         }, false);
         video.addEventListener('pause', function() {
             changeButtonState('playpause');
@@ -268,11 +267,13 @@ if (supportsVideo) {
             var pos = (e.pageX  - (this.offsetLeft + this.offsetParent.offsetLeft)) / this.offsetWidth;
             video.currentTime = pos * video.duration;
 
+            var pos = (e.pageX)
 
 
 
 
-        });
+
+            });
 
 
 
@@ -457,10 +458,7 @@ if (supportsVideo) {
                         newAnnotationBox.style.paddingLeft = "10px";
                         newAnnotationBox.style.paddingTop = "18px";
                         newAnnotationBox.style.paddingRight = "30px";
-
-
-
-
+                        newAnnotationBox.style.right = "15px";
 
                         var a = document.createElement('a');
                         newAnnotationBox.appendChild(a);
@@ -468,7 +466,6 @@ if (supportsVideo) {
                         a.style.float = "right";
                         a.style.padding = "2px";
                         a.style.color = "white";
-
 
                         a.addEventListener('click', function(){
                             invisibox.removeChild(newAnnotationBox);
@@ -487,9 +484,6 @@ if (supportsVideo) {
                         check.style.color = "black";
                         check.style.borderRadius = "5px";
 
-
-
-
                         var beginTimeText = document.createElement('div');
                         var beginTime = document.createElement('input');
                         var endTimeText = document.createElement('div');
@@ -501,7 +495,6 @@ if (supportsVideo) {
                         beginTimeText.style.top = "10px";
                         newAnnotationBox.appendChild(beginTimeText);
 
-
                         beginTime.id = "beginTime";
                         beginTime.class = "without_ampm";
                         beginTime.type = "time";
@@ -509,13 +502,19 @@ if (supportsVideo) {
                         beginTime.max = video.duration;
                         beginTimeText.appendChild(beginTime);
 
+                        var btAssign = document.createElement('button');
+                        btAssign.id = "check";
+                        btAssign.class = "assign-buttons";
+                        btAssign.innerHTML = "ASSIGN";
+                        beginTimeText.appendChild(btAssign);
+                        btAssign.style.position = "relative";
+                        btAssign.style.left = "10%";
 
 
                         endTimeText.style.padding = "15px";
                         endTimeText.innerHTML = "END:";
                         endTimeText.style.position = "relative";
                         newAnnotationBox.appendChild(endTimeText);
-
 
                         endTime.id = "endTime";
                         endTime.class = "without_ampm";
@@ -525,16 +524,24 @@ if (supportsVideo) {
                         endTime.style.left = "8%";
                         endTimeText.appendChild(endTime);
 
+                        var endAssign = document.createElement('button');
+                        endAssign.id = "check";
+                        endAssign.class = "assign-buttons";
+                        endAssign.innerHTML = "ASSIGN";
+                        endTimeText.appendChild(endAssign);
+                        endAssign.style.position = "relative";
+                        endAssign.style.left = "18%";
+
+
 
                         finalize.id = "check";
                         finalize.class = "check";
                         finalize.style.borderRadius = "4px";
                         finalize.innerHTML = "FINALIZE";
                         finalize.style.position = "relative";
-                        finalize.style.left = "15%";
-                        endTimeText.appendChild(finalize);
-
-
+                        finalize.style.left = "27%";
+                        finalize.style.width = "60%";
+                        newAnnotationBox.appendChild(finalize);
 
 
 
@@ -555,6 +562,14 @@ if (supportsVideo) {
                                     all[i].style.border = "none";
                                 }
                                 check.parentElement.style.border = "5px solid lime";
+
+                                btAssign.addEventListener("mousedown", function(){
+                                    window.alert("fock youz");
+                                });
+
+                                endAssign.addEventListener("mousedown", function(){
+                                    window.alert("fock youz");
+                                });
 
 
                                 canvas.addEventListener('mouseover', function(){
@@ -709,8 +724,7 @@ function drawAnnotation(ann, ctx) {
     ctx.lineWidth = 1;
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.rect(ann.x, ann.y, ann.w, ann.h);
-    ctx.fillText(ann.content, (ann.x-5),(ann.y-5));
+    ctx.rect((ann.x + 0.5), (ann.y + 0.5), ann.w, ann.h);
     ctx.stroke();
     if (currentAnnotation!=null){
         drawHandles();  }
@@ -796,10 +810,7 @@ function updateList() {
     var contentList = document.getElementById("annotation-list");
     //contentList.innerHTML = "";
 
-    var list = document.createElement('ul');
-    while (list.firstChild) {
-        list.removeChild(list.firstChild);
-    }
+
     for (var i = 0; i < annotationList.length; i++) {
         var item = document.createElement('li');
         var current = annotationList[i];
@@ -885,7 +896,7 @@ function editAnno(index){ //this needs some adjustments still
 
 function showInputField() {
     var inputArea = document.getElementById("input-area");
-    document.getElementById("input-area").value = "";
+    document.getElementById("input-area").value = "1";
     inputArea.style.display = "block";
 }
 

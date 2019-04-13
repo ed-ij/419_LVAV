@@ -66,15 +66,5 @@
 
 
         </script>
-
-        <script>
-            if (video.readyState > 0) {
-                video.ontimeupdate = function(){myFunction()}
-                function myFunction(){
-                    document.getElementById('current-time').innerHTML = video.currentTime;
-                }
-            }
-
-        </script>
     </body>
 </html>
