@@ -39,7 +39,7 @@
             document.createElement('article');
             document.createElement('footer');
         </script>
-        <script src="MediaStreamer.js"> </script>
+<!--    <script src="MediaStreamer.js"> </script>   -->
         <script src="annotate_app.js"></script>
     </head>
 
@@ -55,17 +55,13 @@
                 <video id="video-player" controls>
                   <source src="../Videos/BackCameraClips/Eating1Round1.mp4" type="video/mp4"></video>
                 </div>
-<!--				<div>
-                    <a href="phpE7B2.tmp" title="Download WebM file to stream as pre-recorded media" download="chrome.webm" target="_blank">Download WebM video</a>
-                </div>
-                <div>
-                    <a href="phpE7B2.tmp" title="Download WebM file to stream as pre-recorded media" download="chrome.mp4" target="_blank">Download MP4 video</a>
-                </div>
--->
+
             <div class="input-area" id="input-area">
                 Annotation text:
-                <form action="javascript:finalizeAnnotation();" style="display: inline;">
+                <form action="javascript:finalizeDatabaseAnnotation();" style="display: inline;">
                     <input type="text" id="content-text">
+                    <input type="button" onclick="setStartTime()" value="Set Start Time">
+                    <input type="button" onclick="setEndTime()" value="Set End Time">
                     <input type="submit" value="Finalize">
                     <input type="button" onclick="discardAnnotation()" value="Discard">
 					<p> Start time: <input type="text" id="start-time"> End Time: <input type="text" id="end-time"></p>
@@ -77,36 +73,7 @@
             <!-- Generated on-demand by JS -->
         </div>
 				</section>
-
-<!--            <script>
-                var channel = location.href.replace( /\/|:|#|%|\.|\[|\]/g , '');
-
-                // using firebase for sharing stream-packets i.e. chunks
-                var firebase = new Firebase('https://chat.firebaseIO.com/' + channel);
-
-                // messaging channel MUST have "send" method!
-                firebase.send = function(data) {
-                    firebase.push(data);
-                };
-
-                firebase.on('child_added', function(data) {
-                    var stream = data.val();
-
-                    // pass shared chunks/data/streaming-packets over "onstream"
-                    streamer.onstream(stream);
-                });
-
-                firebase.onDisconnect().remove();
-
-                // new MediaStream(socket, outputVideo)
-                var streamer = new MediaStreamer(firebase, document.querySelector('video'));
-
-                document.querySelector('input[type=file]').onchange = function() {
-                    // "stream" method actually streams pre-recorded media i.e. webm file
-                    streamer.stream(this.files[0]);
-                };
-            </script>
--->        </article>
+        </article>
 
     </body>
 </html>

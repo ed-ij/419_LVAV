@@ -3,7 +3,7 @@
     Video Annotation Platform App JS
     Based on a project by Abby
 
-    Class: ECE 419
+    Class: ECE 419 & 420
 
     V0.0.1
 ================================================================================
@@ -41,7 +41,7 @@ window.setInterval(redraw, 250); // Call redraw every second.
     Initialize the app.
 */
 function init() {
-		var database = firebase.database();
+	var database = firebase.database();
 
     // Setup video links.
     var videoLinks = document.getElementsByClassName("video-link");
@@ -153,30 +153,39 @@ function startAnnotation(x, y) {
     videoPlayer.pause();
     currentAnnotation =  new Annotation();
     currentAnnotation.start = videoPlayer.currentTime;
-	document.getElementById("start-time").value = videoPlayer.currentTime;
+		document.getElementById("start-time").value = videoPlayer.currentTime;
     currentAnnotation.x = x;
     currentAnnotation.y = y;
     if (currentAnnotation.w === undefined) {
         currentAnnotation.x = mouseX;
         currentAnnotation.y = mouseY;
-		currentAnnotation.w = 1;
+				currentAnnotation.w = 1;
         dragBR = true;
       }
 
     redraw();
-	showInputField();
+		showInputField();
 }
 
-/*
-    Finalize current annotation.
-*/
+/*    Set current annotation start time, only really needed for edit annotation functionality  */
+function setStartTime() {
+		currentAnnotation.start = videoPlayer.currentTime;
+		document.getElementById("start-time").value = videoPlayer.currentTime;
+		}
+
+/*		    Set current annotation end time, seperated from finalize annotation to make usage clearer  */
+function setEndTime() {
+		currentAnnotation.end = videoPlayer.currentTime;
+		document.getElementById("end-time").value = videoPlayer.currentTime;
+		}
+
+/*    Finalize current annotation to list*/
 function finalizeAnnotation() {
     if (!currentAnnotation) {
         return;
     }
     var contentField = document.getElementById("content-text");
     currentAnnotation.content = contentField.value;
-    currentAnnotation.end = videoPlayer.currentTime;
 		currentAnnotation.username = "defaultUser";
 	  currentAnnotation.dbID=-1;
     if (currentAnnotation.content == ""
@@ -186,8 +195,10 @@ function finalizeAnnotation() {
 
     annotationList.push(currentAnnotation);
     annotationList.sort(compareAnnotations);
-    currentAnnotation = null;
+    //currentAnnotation = null;
+		finalizeDatabaseAnnotation();
 }
+/*    Finalize current annotation  to database*/
 
 function finalizeDatabaseAnnotation() {
     if (!currentAnnotation) {
@@ -195,19 +206,24 @@ function finalizeDatabaseAnnotation() {
     }
     var contentField = document.getElementById("content-text");
 		if (currentAnnotation.content == ""
-        || videoplayer.currentTime - currentAnnotation.start <= 0) {
+        || currentAnnotation.end - currentAnnotation.start <= 0) {
         return;
-    database.ref('annotations/'+ currentAnnotation.dbID).set({
-			category: contentField.value,
-			start: currentAnnotation.start,
-    	end: videoPlayer.currentTime,
-			x: currentAnnotation.x,
-			y: currentAnnotation.y,
-			w: currentAnnotation.w,
-			h: currentAnnotation.h,
-			username: "defaultUser"
-		});
-		return;
+/*    var newAnnotationRef = database.push();
+ 			newAnnotationRef.set({
+				category: contentField.value,
+				start: currentAnnotation.start,
+    		end: videoPlayer.currentTime,
+				x: currentAnnotation.x,
+				y: currentAnnotation.y,
+				w: currentAnnotation.w,
+				h: currentAnnotation.h,
+				username: "defaultUser",
+				//video: videoName													//todo store keys, they are last element of reference address
+			}); */
+			firebase.database().ref('users/' + abcde).set({
+    		username: "name",
+  		});
+			return;
     }
 		// need to rewrite the annotation list function to pull from the database
     currentAnnotation = null;
