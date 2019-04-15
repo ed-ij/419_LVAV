@@ -45,6 +45,12 @@ var videoContainer = document.getElementById('videoContainer');
 var video = document.getElementById('video');
 var videoControls = document.getElementById('video-controls');
 
+var finalAnnotations = [];
+var getEndTime;
+var stringEndTime;
+var getStartTime;
+var stringStartTime;
+
 
 
 
@@ -267,13 +273,9 @@ if (supportsVideo) {
             var pos = (e.pageX  - (this.offsetLeft + this.offsetParent.offsetLeft)) / this.offsetWidth;
             video.currentTime = pos * video.duration;
 
-            var pos = (e.pageX)
 
 
-
-
-
-            });
+        });
 
 
 
@@ -485,22 +487,28 @@ if (supportsVideo) {
                         check.style.borderRadius = "5px";
 
                         var beginTimeText = document.createElement('div');
-                        var beginTime = document.createElement('input');
+                        var beginTime = document.createElement('div');
                         var endTimeText = document.createElement('div');
-                        var endTime = document.createElement('input');
+                        var endTime = document.createElement('div');
                         finalize = document.createElement('button');
                         beginTimeText.style.padding = "15px";
                         beginTimeText.innerHTML = "BEGIN: ";
                         beginTimeText.style.position = "relative";
                         beginTimeText.style.top = "10px";
+
                         newAnnotationBox.appendChild(beginTimeText);
 
                         beginTime.id = "beginTime";
                         beginTime.class = "without_ampm";
-                        beginTime.type = "time";
+                        beginTime.style.width = "100px";
+                        beginTime.style.height = "18px";
+                        beginTime.style.backgroundColor = "white";
                         beginTime.style.position = "relative";
-                        beginTime.max = video.duration;
                         beginTimeText.appendChild(beginTime);
+                        beginTime.style.border = "2px solid gray";
+                        beginTime.style.top = "5px";
+                        beginTime.style.display = "inline-block";
+                        beginTime.style.color = "black";
 
                         var btAssign = document.createElement('button');
                         btAssign.id = "check";
@@ -508,7 +516,10 @@ if (supportsVideo) {
                         btAssign.innerHTML = "ASSIGN";
                         beginTimeText.appendChild(btAssign);
                         btAssign.style.position = "relative";
-                        btAssign.style.left = "10%";
+                        btAssign.style.left = "5%";
+                        btAssign.style.display = "inline-block";
+                        btAssign.style.bottom = "3px";
+
 
 
                         endTimeText.style.padding = "15px";
@@ -518,19 +529,27 @@ if (supportsVideo) {
 
                         endTime.id = "endTime";
                         endTime.class = "without_ampm";
-                        endTime.type = "time";
                         endTime.style.position = "relative";
                         endTime.max = video.duration;
                         endTime.style.left = "8%";
                         endTimeText.appendChild(endTime);
+                        endTime.style.border = "2px solid gray";
+                        endTime.style.top = "5px";
+                        endTime.style.display = "inline-block";
+                        endTime.style.width = "100px";
+                        endTime.style.height = "18px";
+                        endTime.style.backgroundColor = "white";
+                        endTime.style.color = "black";
 
                         var endAssign = document.createElement('button');
+                        endAssign.name = "submit";
                         endAssign.id = "check";
                         endAssign.class = "assign-buttons";
                         endAssign.innerHTML = "ASSIGN";
                         endTimeText.appendChild(endAssign);
                         endAssign.style.position = "relative";
-                        endAssign.style.left = "18%";
+                        endAssign.style.left = "13%";
+                        endAssign.style.bottom = "3px";
 
 
 
@@ -563,13 +582,28 @@ if (supportsVideo) {
                                 }
                                 check.parentElement.style.border = "5px solid lime";
 
-                                btAssign.addEventListener("mousedown", function(){
-                                    window.alert("fock youz");
+
+                                btAssign.addEventListener('click', function(){
+
+                                    getStartTime = video.currentTime;
+                                    getStartTime = getStartTime.toFixed(2);
+                                    stringStartTime = getStartTime.toString();
+                                    beginTime.innerHTML = stringStartTime;
+
                                 });
 
-                                endAssign.addEventListener("mousedown", function(){
-                                    window.alert("fock youz");
+                                endAssign.addEventListener('click', function(){
+
+
+                                    getEndTime = video.currentTime;
+                                    getEndTime = getEndTime.toFixed(2);
+                                    stringEndTime = getEndTime.toString();
+                                    endTime.innerHTML = stringEndTime;
+
                                 });
+
+
+
 
 
                                 canvas.addEventListener('mouseover', function(){
@@ -578,6 +612,24 @@ if (supportsVideo) {
                                 canvas.addEventListener('mousedown', mouseDown);
                                 canvas.addEventListener('mouseup', mouseUp, false);
                                 canvas.addEventListener('mousemove', mouseMove, false);
+
+                                finalize.addEventListener('click', function(){
+                                    var x, y, w, h;
+                                    x = currentAnnotation.x;
+                                    y = currentAnnotation.y;
+                                    w = currentAnnotation.w;
+                                    h = currentAnnotation.h;
+
+                                    var newAnnotation = {id: newAnnotationBox.id, begin: getStartTime, end: getEndTime, x: x, y: y, w: w, h: h};
+
+                                    finalAnnotations.push(newAnnotation);
+
+                                    window.alert(finalAnnotations[0].id);
+
+
+
+
+                                });
                             }
                         });
                         cow++;
@@ -605,11 +657,14 @@ function mouseDown(e) {
     mouseX = e.pageX - pos.x;
     mouseY = e.pageY - pos.y;
 
+
+
     /*var xPos = event.pageX - pos.x;
     var yPos = event.pageY - pos.y;
 	*/
     mouseX *= canvas.width/canvas.offsetWidth;
     mouseY *= canvas.height/canvas.offsetHeight;
+
 
 
     if (currentAnnotation == null) {
@@ -724,7 +779,7 @@ function drawAnnotation(ann, ctx) {
     ctx.lineWidth = 1;
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.rect((ann.x + 0.5), (ann.y + 0.5), ann.w, ann.h);
+    ctx.rect(ann.x + 0.5,ann.y + 0.5, ann.w, ann.h);
     ctx.stroke();
     if (currentAnnotation!=null){
         drawHandles();  }
