@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", init, false);
+
 var addNew;
 var labelnameDiv;
 var lbText;
@@ -51,8 +53,23 @@ var stringEndTime;
 var getStartTime;
 var stringStartTime;
 
+// for firebase integration:
+var database;
 
-
+function init() {
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAggWr9t0RNu2u5XzDSuZp85EYxB9G8tyI",
+        authDomain: "lsvav-ece420.firebaseapp.com",
+        databaseURL: "https://lsvav-ece420.firebaseio.com",
+        projectId: "lsvav-ece420",
+        storageBucket: "lsvav-ece420.appspot.com",
+        messagingSenderId: "542547803047"
+    };
+    firebase.initializeApp(config);
+    database = firebase.database();
+    console.log("Database setup complete");
+}
 
 
 /*window.setInterval(redraw, 250); // Call redraw every second.
@@ -301,7 +318,9 @@ if (supportsVideo) {
             setFullscreenData(!!document.msFullscreenElement);
         });
 
-
+        // NEEDS TO BE AFTER VIDEO IS LOADED, LOADING NOT MANIPULATED YET
+        videoName = getVideoName();
+        console.log(videoName);
 
         newLabel = document.getElementById('create-new');
 
@@ -620,15 +639,15 @@ if (supportsVideo) {
                                     w = currentAnnotation.w;
                                     h = currentAnnotation.h;
 
+                                    /*
                                     var newAnnotation = {id: newAnnotationBox.id, begin: getStartTime, end: getEndTime, x: x, y: y, w: w, h: h};
-
                                     finalAnnotations.push(newAnnotation);
-
                                     window.alert(finalAnnotations[0].id);
-
-
-
-
+                                    */
+                                    var newAnnotationKey = database.ref().child('annotations').push().key;
+                                    console.log(newAnnotationKey);
+                                    var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName);
+                                    console.log(newAnnotationStatus);
                                 });
                             }
                         });
@@ -999,7 +1018,34 @@ function Annotation() {
     var changed = false;
 }
 
+// Firebase Integration Functions
+function firebaseUpdate(key, label, startTime, endTime, x, y, w, h, videoName) {
+    var annotationData = {
+        label: label,
+        start: startTime,
+        end: endTime,
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+        video: videoName,
+    };
+    var updates = {};
+    updates['/annotations/' + key] = annotationData;
+    updates[videoName + '/annotations/' + key] = true;
+    return database.ref().update(updates);
+}
 
-
-
-
+function getVideoName() {
+    var longVideoName = video.getAttribute("src");
+    var videoName = "";
+    longVideoName = longVideoName.slice(0, -4);
+    longVideoName = longVideoName.replace("https://ece46medsrv.ece.unm.edu/", "");
+    if (longVideoName.includes("https://ece46medsrv.ece.unm.edu/")){
+        videoName = longVideoName.replace("https://ece46medsrv.ece.unm.edu/", "");
+    }
+    else {
+        videoName = longVideoName;
+    }
+    return videoName;
+}

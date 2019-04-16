@@ -49,7 +49,6 @@ function createAnnotation() {
     updates['/annotations/' + newAnnotationKey] = annotationData;
     updates['/videos/' + videoName + '/annotations/' + newAnnotationKey] = true;
     return database.ref().update(updates);
-        //todo store keys, they are last element of reference address
 }
 function getAnnotation() {
     var searchKey = document.getElementById("annotation-id-edit").value;
