@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Form Testing Page</title>
+<!--    <script>
+        var audioSource = context.createMediaElementSource(document.getElementById("v"));
+        var filter = context.createBiquadFilter();
+        audioSource.connect(filter);
+		    filter.connect(context.destination);
+    </script>
+-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" type="text/css" href="FormTests.css">
+    </head>
+    <body>
+        <div style="display: block;">
+            <form action="javascript:createAnnotation();">
+                <input type="text" id="label-create">
+                <input type="text" id="start-time-create">
+                <input type="text" id="end-time-create">
+                <input type="submit" value="Create">
+                <input type="button" onclick="cancelAnnotation()" value="Cancel">
+            </form>
+        </div>
+        <div style="display: block;">
+            <form action="javascript:editAnnotation();">
+                <input type="text" id="annotation-id-edit">
+                <input type="button" onclick="getAnnotation()" value="Get Info">
+                <input type="text" id="label-edit">
+                <input type="text" id="start-time-edit">
+                <input type="text" id="end-time-edit">
+                <input type="submit" value="Submit Edit">
+            </form>
+        </div>
+        <div style="display: block;">
+            <form action="javascript:removeAnnotation();">
+                <input type="text" id="annotation-id-remove">
+                <input type="submit" value="Remove">
+                <input type="button" onclick="cancelRemove()" value="Cancel">
+            </form>
+        </div>
+
+        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-database.js"></script>
+        <script src="FormTests.js"></script>
+    </body>
+</html>
