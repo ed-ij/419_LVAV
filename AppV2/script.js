@@ -211,6 +211,7 @@ if (supportsVideo) {
 
     // Only add the events if addEventListener is supported
     if (document.addEventListener) {
+        chooseVideo();
         // Wait for the video's meta data to be loaded, then set the progress bar's max value to the duration of the video
         video.addEventListener('loadedmetadata', function() {
             progress.setAttribute('max', video.duration);
