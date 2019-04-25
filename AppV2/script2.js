@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", init, false);
+
 var addNew;
 var labelnameDiv;
 var lbText;
@@ -79,7 +81,23 @@ var busy1 = false;
 var busy2 = false;
 
 
+// for firebase integration:
+var database;
 
+function init() {
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAggWr9t0RNu2u5XzDSuZp85EYxB9G8tyI",
+        authDomain: "lsvav-ece420.firebaseapp.com",
+        databaseURL: "https://lsvav-ece420.firebaseio.com",
+        projectId: "lsvav-ece420",
+        storageBucket: "lsvav-ece420.appspot.com",
+        messagingSenderId: "542547803047"
+    };
+    firebase.initializeApp(config);
+    database = firebase.database();
+    console.log("Database setup complete");
+}
 
 
 /*window.setInterval(redraw, 250); // Call redraw every second.
@@ -336,8 +354,8 @@ if (supportsVideo) {
             setFullscreenData(!!document.msFullscreenElement);
         });
 
-
-
+        videoName = getVideoName();
+        console.log(videoName);
 
         newLabel = document.getElementById('create-new');
         newLabel.addEventListener('click', function(){ //Create New Label is pressed.
@@ -552,7 +570,7 @@ function submitLabel(color, label){
     addNew.style.backgroundColor = color;
     addNew.style.color = "white";
 
-
+    firebaseNewLabel(labelnameDiv.innerHTML, color, videoName);
 
 
 
@@ -749,14 +767,16 @@ function finalizeNewAnno(){
     y = currentAnnotation.y;
     w = currentAnnotation.w;
     h = currentAnnotation.h;
-
+    /*
     var newAnnotation = {id: newAnnotationBox.id, begin: getStartTime, end: getEndTime, x: x, y: y, w: w, h: h};
-
     finalAnnotations.push(newAnnotation);
-
+    */
     //console.log(newAnnotation);
 
-
+    var newAnnotationKey = database.ref().child('annotations').push().key;
+    console.log(newAnnotationKey);
+    var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName);
+    console.log(newAnnotationStatus);
 
 }
 //END My code/*
@@ -1112,5 +1132,78 @@ function Annotation() {
 
 
 
+// Firebase Integration Functions
+
+function firebaseUpdate(key, label, startTime, endTime, x, y, w, h, videoName) {
+    var annotationData = {
+        label: label,
+        start: startTime,
+        end: endTime,
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+        video: videoName,
+    };
+    var updates = {};
+    updates['/annotations/' + key] = annotationData;
+    updates[videoName + '/annotations/' + label] = key;
+    return database.ref().update(updates);
+}
+
+function firebaseNewLabel(label, color, videoName) {
+    var updates = {};
+    updates[videoName + '/labels/' + label] = color;
+    return database.ref().update(updates);
+}
 
 
+function getAnnotation() {
+    var searchKey = document.getElementById("annotation-id-edit").value;
+    console.log(searchKey);
+	if (searchKey == "") {
+        return;
+    }
+    var annotationRef = database.ref().child('annotations/'+[searchKey]);
+    return annotationRef.once('value').then(function(snapshot){
+        startTimeEdit.value = snapshot.val().start;
+        endTimeEdit.value = snapshot.val().end;
+        labelEdit.value = snapshot.val().label;
+    });
+}
+
+function removeAnnotation() {
+    var removeKey = document.getElementById("annotation-id-remove").value;
+    console.log(removeKey);
+    var videoName = "placeholderVideoTitle";
+	if (removeKey == "") {
+        return;
+    }
+    var annotationRef = database.ref().child('annotations/' + removeKey);
+    annotationRef.remove()
+        .catch(function(error) {
+            console.log("Remove failed: " + error.message)
+        });
+    var videoRef = database.ref().child('videos/' + videoName + '/annotations/' + removeKey);
+    videoRef.remove()
+        .then(function() {
+            console.log("Remove succeeded.")
+        })
+        .catch(function(error) {
+            console.log("Remove failed: " + error.message)
+        });
+}
+
+function getVideoName() {
+    var longVideoName = video.getAttribute("src");
+    var videoName = "";
+    longVideoName = longVideoName.slice(0, -4);
+    longVideoName = longVideoName.replace("https://ece46medsrv.ece.unm.edu/", "");
+    if (longVideoName.includes("https://ece46medsrv.ece.unm.edu/")){
+        videoName = longVideoName.replace("https://ece46medsrv.ece.unm.edu/", "");
+    }
+    else {
+        videoName = longVideoName;
+    }
+    return videoName;
+}

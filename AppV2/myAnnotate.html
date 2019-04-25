@@ -18,10 +18,11 @@
                 <div id="label-home">
 
                     <!--<subdiv class="subdiv"></subdiv>
-<subdiv class="subdiv"></subdiv>
-<subdiv class="subdiv"></subdiv>
-<subdiv class="subdiv"></subdiv>
-<subdiv class="subdiv"></subdiv>-->
+                    <subdiv class="subdiv"></subdiv>
+                    <subdiv class="subdiv"></subdiv>
+                    <subdiv class="subdiv"></subdiv>
+                    <subdiv class="subdiv"></subdiv>-->
+                    
                 </div>
 
                 <div id="new-new"></div>
@@ -30,7 +31,7 @@
 
         <figure id="videoContainer" data-fullscreen="false">
             <div id='vid-div'>
-                <video id="video" class="video">
+                <video id="video" src="https://ece46medsrv.ece.unm.edu/non_irb_videos/Antonia/BackCameraClips/Eating1Round1_q2.mp4" class="video">
                 </video>
             </div>
 
@@ -59,7 +60,7 @@
         <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-database.js"></script>
 
-        <script src="script.js"></script>
+        <script src="script2.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         <script>
@@ -69,16 +70,12 @@
                     var vid_duration = video.duration;
                     duration.firstChild.nodeValue = vid_duration;
                     clearInterval(t);
-
-
                 }
             },500);
-
         </script>
 
         <script>
             var vid = document.getElementById("video");
-
             $("#progress").on("click", function(e){
                 var offset = $(this).offset();
                 var left = (e.pageX - offset.left);
@@ -87,12 +84,8 @@
                 var vidTime = vid.duration * percentage;
                 vid.currentTime = vidTime;
                 document.getElementById('current-time').innerHTML = video.currentTime;
-
             });//click()
-
-
-
-
         </script>
+
     </body>
 </html>
