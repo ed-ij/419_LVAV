@@ -407,7 +407,7 @@ if (supportsVideo) {
                     var kids = e.target.parentElement.parentElement.children;
                     kids = kids.length;
                     //console.log(kids);
-                    createNewAnnotation(color, label, kids, boxInd);
+                    createNewAnnotation(color, label, kids, e.target.parentElement.parentElement);
 
 
                 }
@@ -591,7 +591,7 @@ function submitLabel(color, label){
 
 //Create New Annotation is pressed, so this should create the form
 //to draw the square and get the begin and end times.
-function createNewAnnotation(color, label, index, boxind){
+function createNewAnnotation(color, label, index, e){
 
     newAnnotationBox = document.createElement('div');
     a = document.createElement('a');
@@ -681,10 +681,11 @@ function createNewAnnotation(color, label, index, boxind){
     nAB.appendChild(finalize);
 
 
-    invisibox.appendChild(newAnnotationBox);
-    invisibox.appendChild(nAB);
+    /*invisibox.appendChild(newAnnotationBox);
+    invisibox.appendChild(nAB);*/
 
-
+    e.appendChild(newAnnotationBox);
+    e.appendChild(nAB);
 
     //nAB.style.display = "none";
 
