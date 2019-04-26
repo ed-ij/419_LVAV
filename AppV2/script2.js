@@ -440,18 +440,19 @@ if (supportsVideo) {
 
                 var thisid = e.target.parentElement.id;
                 var kids = e.target.parentElement.parentElement.children;
-                //console.log(kids.length);
+                //console.log(thisid);
                 for(var i = 0; i < kids.length; i++)
                 {
 
                     if(kids[i].id == thisid)
                         kids[i].parentElement.removeChild(kids[i]);
-                    if(kids[i].id == "nAB")
+                    else if(kids[i].id == "nAB")
                         kids[i].parentElement.removeChild(kids[i]);
 
                     busy2 = false;
 
                 }
+                removeAnnotation(thisid);
             }
         });
 
@@ -777,7 +778,6 @@ function finalizeNewAnno(){
     var newAnnotationKey = database.ref().child('annotations').push().key;
     console.log(newAnnotationKey);
     var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName);
-    console.log(newAnnotationStatus);
 
 }
 //END My code/*
@@ -1135,66 +1135,6 @@ function Annotation() {
 
 // Firebase Integration Functions
 
-function firebaseUpdate(key, label, startTime, endTime, x, y, w, h, videoName) {
-    var annotationData = {
-        label: label,
-        start: startTime,
-        end: endTime,
-        x: x,
-        y: y,
-        w: w,
-        h: h,
-        video: videoName,
-    };
-    var updates = {};
-    updates['/annotations/' + key] = annotationData;
-    updates[videoName + '/annotations/' + label] = key;
-    return database.ref().update(updates);
-}
-
-function firebaseNewLabel(label, color, videoName) {
-    var updates = {};
-    updates[videoName + '/labels/' + label] = color;
-    return database.ref().update(updates);
-}
-
-
-function getAnnotation() {
-    var searchKey = document.getElementById("annotation-id-edit").value;
-    console.log(searchKey);
-	if (searchKey == "") {
-        return;
-    }
-    var annotationRef = database.ref().child('annotations/'+[searchKey]);
-    return annotationRef.once('value').then(function(snapshot){
-        startTimeEdit.value = snapshot.val().start;
-        endTimeEdit.value = snapshot.val().end;
-        labelEdit.value = snapshot.val().label;
-    });
-}
-
-function removeAnnotation() {
-    var removeKey = document.getElementById("annotation-id-remove").value;
-    console.log(removeKey);
-    var videoName = "placeholderVideoTitle";
-	if (removeKey == "") {
-        return;
-    }
-    var annotationRef = database.ref().child('annotations/' + removeKey);
-    annotationRef.remove()
-        .catch(function(error) {
-            console.log("Remove failed: " + error.message)
-        });
-    var videoRef = database.ref().child('videos/' + videoName + '/annotations/' + removeKey);
-    videoRef.remove()
-        .then(function() {
-            console.log("Remove succeeded.")
-        })
-        .catch(function(error) {
-            console.log("Remove failed: " + error.message)
-        });
-}
-
 function getVideoName() {
     var longVideoName = video.getAttribute("src");
     var videoName = "";
@@ -1208,3 +1148,68 @@ function getVideoName() {
     }
     return videoName;
 }
+
+function firebaseNewLabel(label, color, videoName) {
+    var updates = {};
+    updates[videoName + '/labels/' + label] = color;
+    return database.ref().update(updates);
+}
+
+function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName) {
+    var annotationData = {
+        label: labelID,
+        start: startTime,
+        end: endTime,
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+        video: videoName,
+    };
+    var updates = {};
+    updates['/annotations/' + key] = annotationData;
+    updates[videoName + '/annotations/' + labelID] = key;
+    return database.ref().update(updates);
+}
+
+function removeAnnotation(labelID) {
+    console.log("starting remove")
+    var labelIDRef = database.ref().child(videoName + '/annotations/' + labelID + '/');
+    var annotationPromise = database.ref().child(videoName + '/annotations/').once("value")
+        .then(function(snapshot) {
+            return snapshot.val()[labelID];
+        });
+    annotationPromise.then(function(key) {
+        var annotationRef = database.ref().child('/annotations/' + key);
+        annotationRef.remove()
+            .then(function() {
+                console.log("Remove annotation succeeded.")
+            })
+            .catch(function(error) {
+                console.log("Remove annotation failed: " + error.message)
+            });
+    })
+    .then(function() {
+        labelIDRef.remove()
+            .then(function() {
+                console.log("Remove label succeeded.")
+            })
+            .catch(function(error) {
+                console.log("Remove label failed: " + error.message)
+            });
+    });
+}
+
+/*function getAnnotation() {
+    var searchKey = document.getElementById("annotation-id-edit").value;
+    console.log(searchKey);
+	if (searchKey == "") {
+        return;
+    }
+    var annotationRef = database.ref().child('annotations/'+[searchKey]);
+    return annotationRef.once('value').then(function(snapshot){
+        startTimeEdit.value = snapshot.val().start;
+        endTimeEdit.value = snapshot.val().end;
+        labelEdit.value = snapshot.val().label;
+    });
+}*/
