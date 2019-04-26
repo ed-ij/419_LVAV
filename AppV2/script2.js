@@ -353,7 +353,7 @@ if (supportsVideo) {
         document.addEventListener('msfullscreenchange', function() {
             setFullscreenData(!!document.msFullscreenElement);
         });
-
+        loadVideo();
         videoName = getVideoName();
         console.log(videoName);
 
@@ -1134,6 +1134,18 @@ function Annotation() {
 
 
 // Firebase Integration Functions
+
+function loadVideo() {
+    passVideo = localStorage.getItem(videoPath);
+    localStorage.setItem("videoPath", "");
+    if (video.getAttribute("src") == "" && passVideo == "") {
+        window.location.replace("https://edij.co.uk/testArea/loadPage.html");
+    }
+    else if (video.getAttribute("src") != passVideo && passVideo != "") {
+        video.setAttribute("src") = passVideo;
+    }
+    video.load();
+}
 
 function getVideoName() {
     var longVideoName = video.getAttribute("src");
