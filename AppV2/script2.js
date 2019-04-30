@@ -58,6 +58,8 @@ var stringStartTime;
 var color;
 var label;
 
+var modal = document.getElementById('myModal');
+var span = document.getElementsByClassName("close")[0];
 
 var beginTimeText;
 var beginTime;
@@ -1210,6 +1212,7 @@ function checkDatabase() {
                         detailsPromise.then(function(details) {
                             // CONSTRUCT ANNOTATION HERE (using data examples below)
                             buildAnnotation(annotation, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
+                            /*
                             console.log('annotation: ' + annotation);
                             console.log('label: ' + label);
                             console.log('color: ' + labels[label]);
@@ -1220,6 +1223,7 @@ function checkDatabase() {
                             console.log('h: ' + details.h);
                             console.log('end: ' + details.end);
                             console.log('start: ' + details.start);
+                            */
                         });
                     }
                 }
@@ -1233,7 +1237,6 @@ function buildLabel(name, color) {
 }
 
 function buildAnnotation(name, color) {
-    // maybe it would be nice to jump the playhead to the last annotation we added idk
     // Need to make sure that the numbering of new annotations starts from wherever the existing annotations finishes, not sure how best to do that.
 }
 
@@ -1248,10 +1251,10 @@ function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName,
         label: labelID,
         start: startTime,
         end: endTime,
-        x: x,
-        y: y,
-        w: w,
-        h: h,
+        x: x.toFixed(3),
+        y: y.toFixed(3),
+        w: w.toFixed(3),
+        h: h.toFixed(3),
         video: videoName,
         color: color,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
@@ -1290,8 +1293,88 @@ function removeAnnotation(labelID) {
     });
 }
 
+function printAnnotations() {
+    console.log('some space here');
+    var printStatement = "Video: " + videoName + "\n\n";
+    var ref = database.ref(videoName + '/annotations/');
+    promiseTest = ref.orderByChild('label').once("value")
+    .then(function(snapshot) {
+        var reads = [];
+        snapshot.forEach(function(annotation) {
+            annotationKey = annotation.val();
+            var detailsPromise = database.ref().child('/annotations/' + annotationKey).once("value")
+                .then(function(details) {
+                    var processedTime = new Date (details.val().timestamp);
+                    var localDateString = processedTime.toLocaleDateString(undefined, {
+                        day : 'numeric',
+                        month : 'short',
+                        year : 'numeric'
+                    })
+                    var localTimeString = processedTime.toLocaleTimeString(undefined, {
+                        hour: '2-digit',
+                    	minute: '2-digit',
+                    	second: '2-digit'
+                    })
+                    printStatement = printStatement
+                                + "Label: " + details.val().label + "\n"
+                                + "Timestamp: " + localTimeString + ", " + localDateString + "\n"
+                                + "x: " + details.val().x + "\n"
+                                + "y: " + details.val().y + "\n"
+                                + "w: " + details.val().w + "\n"
+                                + "h: " + details.val().h + "\n"
+                                + "Start Time: " + details.val().start + "\n"
+                                + "End Time: " + details.val().end + "\n\n";
+                    return details.val();
+                }, function(error) {console.error(error);});
+                reads.push(detailsPromise);
+            });
+        return Promise.all(reads);
+    }, function(error) {console.error(error);})
+    .then(function(values) {
+        //window.alert(printStatement);
+        var printArea = document.getElementById('modal-inner');
+        printArea.innerText = printStatement;
+        modal.style.display = "block";
+    });
+}
 
+function printCSV() {
+    console.log('some space here');
+    var printStatement = "Video: " + videoName + "\n\nlabel,timestamp,x,y,w,h,start,end,\n\n";
+    var ref = database.ref(videoName + '/annotations/');
+    promiseTest = ref.orderByChild('label').once("value")
+    .then(function(snapshot) {
+        var reads = [];
+        snapshot.forEach(function(annotation) {
+            annotationKey = annotation.val();
+            var detailsPromise = database.ref().child('/annotations/' + annotationKey).once("value")
+                .then(function(details) {
+                    printStatement = printStatement
+                                + details.val().label + ","
+                                + details.val().timestamp + ","
+                                + details.val().x + ","
+                                + details.val().y + ","
+                                + details.val().w + ","
+                                + details.val().h + ","
+                                + details.val().start + ","
+                                + details.val().end + ",\n";
+                    return details.val();
+                }, function(error) {console.error(error);});
+                reads.push(detailsPromise);
+            });
+        return Promise.all(reads);
+    }, function(error) {console.error(error);})
+    .then(function(values) {
+        //window.alert(printStatement);
+        var printArea = document.getElementById('modal-inner');
+        printArea.innerText = printStatement;
+        modal.style.display = "block";
+    });
+}
 
+span.onclick = function() {
+  modal.style.display = "none";
+}
 /*function getAnnotation() {
     var searchKey = document.getElementById("annotation-id-edit").value;
     console.log(searchKey);
