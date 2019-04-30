@@ -337,7 +337,11 @@ if (supportsVideo) {
         document.addEventListener('msfullscreenchange', function() {
             setFullscreenData(!!document.msFullscreenElement);
         });
+<<<<<<< HEAD
         //loadVideo();
+=======
+        //loadVideo(); TODO
+>>>>>>> 7a38bb2e3106f1be27098dc0eaca1515ae56dd5e
         videoName = getVideoName();
         console.log(videoName);
         checkDatabase();
@@ -408,8 +412,7 @@ if (supportsVideo) {
             {
                 busy1 = false;
                 busy2 = false;
-
-                finalizeNewAnno();
+                finalizeNewAnno(e.target.parentElement.style.backgroundColor);
                 var dad = e.target.parentElement;
                 dad.parentElement.removeChild(nAB);
                 discardAnnotation();
@@ -438,6 +441,32 @@ if (supportsVideo) {
 
                 }
                 removeAnnotation(thisid);
+            }
+        });
+
+
+//NEW STUFF
+        labelContainer.addEventListener('click', function(e){
+            if(e.target && e.target.name == "nabox")
+            {
+                //console.log("works");
+                if(busy1 == false && busy2 == false)
+                {
+                    //redraw();
+                    //discardAnnotation();
+                    var myid = e.target.id;
+                    for(var i = 0; i < finalAnnotations.length; i++)
+                    {
+                        if(finalAnnotations[i].id == myid)
+                        {
+                            showAnno(finalAnnotations[i].color, finalAnnotations[i].x, finalAnnotations[i].y, finalAnnotations[i].w, finalAnnotations[i].h, ctx);
+                            video.currentTime = finalAnnotations[i].begin;
+                        }
+                        
+                        
+                        
+                    }
+                }
             }
         });
 
@@ -747,17 +776,18 @@ function drawEditAnnotation(){
     //}
 }
 
-function finalizeNewAnno(){
+
+function finalizeNewAnno(color){
 
     var x, y, w, h;
     x = currentAnnotation.x;
     y = currentAnnotation.y;
     w = currentAnnotation.w;
     h = currentAnnotation.h;
-    /*
-    var newAnnotation = {id: newAnnotationBox.id, begin: getStartTime, end: getEndTime, x: x, y: y, w: w, h: h};
+
+    var newAnnotation = {id: newAnnotationBox.id, begin: getStartTime, end: getEndTime, x: x, y: y, w: w, h: h, color: color};
     finalAnnotations.push(newAnnotation);
-    */
+
     //console.log(newAnnotation);
 
     var newAnnotationKey = database.ref().child('annotations').push().key;
@@ -765,6 +795,22 @@ function finalizeNewAnno(){
     var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName);
 
 }
+
+function showAnno(color, x, y, w, h, ctx) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.stroke();
+    if (currentAnnotation!=null){
+        drawHandles();  }
+    
+    
+    
+    //console.log("color:" + color + "x: " + x + "y: " + y, "w: " + w, "h: " + h);
+}
+
 //END My code/*
 function mouseDown(e) {
     // Calculate relative mouse coordinates.
@@ -901,6 +947,10 @@ function drawAnnotation(ann, ctx) {
     if (currentAnnotation!=null){
         drawHandles();  }
 }
+
+
+
+
 
 function redraw() {
 
@@ -1238,27 +1288,27 @@ function removeAnnotation(labelID) {
     console.log("starting remove")
     var labelIDRef = database.ref().child(videoName + '/annotations/' + labelID + '/');
     var annotationPromise = database.ref().child(videoName + '/annotations/').once("value")
-        .then(function(snapshot) {
-            return snapshot.val()[labelID];
-        });
+    .then(function(snapshot) {
+        return snapshot.val()[labelID];
+    });
     annotationPromise.then(function(key) {
         var annotationRef = database.ref().child('/annotations/' + key);
         annotationRef.remove()
             .then(function() {
-                console.log("Remove annotation succeeded.")
-            })
+            console.log("Remove annotation succeeded.")
+        })
             .catch(function(error) {
-                console.log("Remove annotation failed: " + error.message)
-            });
+            console.log("Remove annotation failed: " + error.message)
+        });
     })
-    .then(function() {
+        .then(function() {
         labelIDRef.remove()
             .then(function() {
-                console.log("Remove label succeeded.")
-            })
+            console.log("Remove label succeeded.")
+        })
             .catch(function(error) {
-                console.log("Remove label failed: " + error.message)
-            });
+            console.log("Remove label failed: " + error.message)
+        });
     });
 }
 

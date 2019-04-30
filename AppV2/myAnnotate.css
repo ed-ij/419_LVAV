@@ -354,7 +354,7 @@ background-color: darkgray;
 #invisibox{
     position: relative;
     display:inline-block;
-    border: 2px solid orange;
+    
 }
 
 #labelname{
