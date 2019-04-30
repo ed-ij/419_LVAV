@@ -337,17 +337,13 @@ if (supportsVideo) {
         document.addEventListener('msfullscreenchange', function() {
             setFullscreenData(!!document.msFullscreenElement);
         });
-<<<<<<< HEAD
         //loadVideo();
-=======
-        //loadVideo(); TODO
->>>>>>> 7a38bb2e3106f1be27098dc0eaca1515ae56dd5e
         videoName = getVideoName();
         console.log(videoName);
         checkDatabase();
 
         newLabel = document.getElementById('create-new');
-        newLabel.addEventListener('click', function(){ //Create New Label is pressed.
+        newLabel.addEventListener('click', function() { //Create New Label is pressed.
 
             if(busy1 == false)
             {
@@ -371,7 +367,7 @@ if (supportsVideo) {
 
 
 
-        labelContainer.addEventListener('click', function(e){ //Create New Annotation is pressed
+        labelContainer.addEventListener('click', function(e) { //Create New Annotation is pressed
             var num = 0;
             if(e.target && e.target.id == "addNew")
             {
@@ -380,15 +376,12 @@ if (supportsVideo) {
                 label = e.target.parentElement.id;
                 var boxInd;
 
-                if(busy2 == false)
-                {
+                if(busy2 == false) {
                     busy2 = true;
-
                     var numibox = document.getElementsByTagName('tot');
-                    for(var i = 0; i < numibox.length; i++)
-                    {
-                        if(e.target.parentElement == numibox[i])
-                        {
+
+                    for(var i = 0; i < numibox.length; i++) {
+                        if(e.target.parentElement == numibox[i]) {
                             boxInd = i;
                         }
                     }
@@ -397,56 +390,46 @@ if (supportsVideo) {
                     kids = kids.length;
                     //console.log(kids);
                     createNewAnnotation(color, label, kids, e.target.parentElement.parentElement);
-
-
                 }
-
-
             }
         });
 
 
-        labelContainer.addEventListener('click', function(e){
+        labelContainer.addEventListener('click', function(e) {
 
-            if(e.target && e.target.id == "finalize")
-            {
+            if(e.target && e.target.id == "finalize") {
                 busy1 = false;
                 busy2 = false;
                 finalizeNewAnno(e.target.parentElement.style.backgroundColor);
                 var dad = e.target.parentElement;
                 dad.parentElement.removeChild(nAB);
                 discardAnnotation();
-
             }
 
         });
 
-        labelContainer.addEventListener('click', function(e){
-
-            if(e.target && e.target.id == "delete")
-            {
-
+        labelContainer.addEventListener('click', function(e) {
+            if(e.target && e.target.id == "delete") {
                 var thisid = e.target.parentElement.id;
                 var kids = e.target.parentElement.parentElement.children;
-                //console.log(thisid);
-                for(var i = 0; i < kids.length; i++)
-                {
 
-                    if(kids[i].id == thisid)
+                for(var i = 0; i < kids.length; i++) {
+                    if(kids[i].id == thisid) {
                         kids[i].parentElement.removeChild(kids[i]);
-                    else if(kids[i].id == "nAB")
+                    }
+                    else if(kids[i].id == "nAB") {
                         kids[i].parentElement.removeChild(kids[i]);
-
+                    }
                     busy2 = false;
-
                 }
+
                 removeAnnotation(thisid);
             }
         });
 
 
 //NEW STUFF
-        labelContainer.addEventListener('click', function(e){
+        labelContainer.addEventListener('click', function(e) {
             if(e.target && e.target.name == "nabox")
             {
                 //console.log("works");
@@ -455,26 +438,28 @@ if (supportsVideo) {
                     //redraw();
                     //discardAnnotation();
                     var myid = e.target.id;
-                    for(var i = 0; i < finalAnnotations.length; i++)
-                    {
-                        if(finalAnnotations[i].id == myid)
-                        {
-                            showAnno(finalAnnotations[i].color, finalAnnotations[i].x, finalAnnotations[i].y, finalAnnotations[i].w, finalAnnotations[i].h, ctx);
-                            video.currentTime = finalAnnotations[i].begin;
-                        }
-                        
-                        
-                        
-                    }
+
+                    var annotationPromise = database.ref().child(videoName + '/annotations/' + myid).once("value")
+                        .then(function(snapshot) {
+                            return snapshot.val();
+                        });
+                    annotationPromise.then(function(key) {
+                        var annotationDetails = database.ref().child('/annotations/' + key).once("value")
+                            .then(function(snapshot) {
+                                return snapshot.val();
+                            })
+                            .then(function(details) {
+                                showAnno(details.color, details.x, details.y, details.w, details.h, ctx);
+                                video.currentTime = details.start;
+                            });
+                        });
                 }
             }
         });
-
-
     }
 }
 
-canvas.addEventListener('click', function(){
+canvas.addEventListener('click', function() {
     if(video.paused == false)
         video.pause();
 
@@ -495,7 +480,7 @@ labelContainer.addEventListener('click', function(e){
 
 //Start New Shit
 //Function creates new input form to get label name and color
-function createNewLabel(){ //Creates box in which you can name label and select color
+function createNewLabel() { //Creates box in which you can name label and select color
 
 
     if(document.getElementById('newButton') == null)
@@ -548,7 +533,7 @@ function createNewLabel(){ //Creates box in which you can name label and select 
 
 //function executes when Submit is pressed on input form. Creates The Label with Create
 // new Annotation button.
-function submitLabel(color, label){
+function submitLabel(color, label) {
 
     /*color = document.getElementById("colorPick").value;
     label = document.getElementById("namebox").value;*/
@@ -606,7 +591,7 @@ function submitLabel(color, label){
 
 //Create New Annotation is pressed, so this should create the form
 //to draw the square and get the begin and end times.
-function createNewAnnotation(color, label, index, e){
+function createNewAnnotation(color, label, index, e) {
 
     newAnnotationBox = document.createElement('div');
     a = document.createElement('a');
@@ -711,7 +696,7 @@ function createNewAnnotation(color, label, index, e){
 }
 
 
-function drawEditAnnotation(){
+function drawEditAnnotation() {
     /* if(check.parentElement.style.border == "5px solid lime") //draw annotation already selected
     {
         check.parentElement.style.border == "none";
@@ -777,23 +762,16 @@ function drawEditAnnotation(){
 }
 
 
-function finalizeNewAnno(color){
-
+function finalizeNewAnno(color) {
     var x, y, w, h;
     x = currentAnnotation.x;
     y = currentAnnotation.y;
     w = currentAnnotation.w;
     h = currentAnnotation.h;
 
-    var newAnnotation = {id: newAnnotationBox.id, begin: getStartTime, end: getEndTime, x: x, y: y, w: w, h: h, color: color};
-    finalAnnotations.push(newAnnotation);
-
-    //console.log(newAnnotation);
-
     var newAnnotationKey = database.ref().child('annotations').push().key;
     console.log(newAnnotationKey);
-    var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName);
-
+    var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName, color);
 }
 
 function showAnno(color, x, y, w, h, ctx) {
@@ -803,11 +781,9 @@ function showAnno(color, x, y, w, h, ctx) {
     ctx.beginPath();
     ctx.rect(x, y, w, h);
     ctx.stroke();
-    if (currentAnnotation!=null){
-        drawHandles();  }
-    
-    
-    
+    if (currentAnnotation!=null) {
+        drawHandles();
+    }
     //console.log("color:" + color + "x: " + x + "y: " + y, "w: " + w, "h: " + h);
 }
 
@@ -1253,7 +1229,7 @@ function checkDatabase() {
 }
 
 function buildLabel(name, color) {
-    
+
 }
 
 function buildAnnotation(name, color) {
@@ -1267,7 +1243,7 @@ function firebaseNewLabel(label, color, videoName) {
     return database.ref().update(updates);
 }
 
-function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName) {
+function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName, color) {
     var annotationData = {
         label: labelID,
         start: startTime,
@@ -1277,6 +1253,8 @@ function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName)
         w: w,
         h: h,
         video: videoName,
+        color: color,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
     };
     var updates = {};
     updates['/annotations/' + key] = annotationData;
