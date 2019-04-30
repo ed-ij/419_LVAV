@@ -1,5 +1,3 @@
-document.addEventListener("DOMContentLoaded", init, false);
-
 var addNew;
 var labelnameDiv;
 var lbText;
@@ -84,21 +82,6 @@ var busy2 = false;
 // for firebase integration:
 var database;
 
-function init() {
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyAggWr9t0RNu2u5XzDSuZp85EYxB9G8tyI",
-        authDomain: "lsvav-ece420.firebaseapp.com",
-        databaseURL: "https://lsvav-ece420.firebaseio.com",
-        projectId: "lsvav-ece420",
-        storageBucket: "lsvav-ece420.appspot.com",
-        messagingSenderId: "542547803047"
-    };
-    firebase.initializeApp(config);
-    database = firebase.database();
-    console.log("Database setup complete");
-}
-
 
 /*window.setInterval(redraw, 250); // Call redraw every second.
 window.onbeforeunload = function(){
@@ -124,6 +107,7 @@ var supportsVideo = !!document.createElement('video').canPlayType;
 
 
 if (supportsVideo) {
+    init();
     // Obtain handles to main elements
     // Hide the default controls
     video.controls = false;
@@ -353,9 +337,10 @@ if (supportsVideo) {
         document.addEventListener('msfullscreenchange', function() {
             setFullscreenData(!!document.msFullscreenElement);
         });
-        loadVideo();
+        //loadVideo();
         videoName = getVideoName();
         console.log(videoName);
+        checkDatabase();
 
         newLabel = document.getElementById('create-new');
         newLabel.addEventListener('click', function(){ //Create New Label is pressed.
@@ -1135,6 +1120,21 @@ function Annotation() {
 
 // Firebase Integration Functions
 
+function init() {
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAggWr9t0RNu2u5XzDSuZp85EYxB9G8tyI",
+        authDomain: "lsvav-ece420.firebaseapp.com",
+        databaseURL: "https://lsvav-ece420.firebaseio.com",
+        projectId: "lsvav-ece420",
+        storageBucket: "lsvav-ece420.appspot.com",
+        messagingSenderId: "542547803047"
+    };
+    firebase.initializeApp(config);
+    database = firebase.database();
+    console.log("Database setup complete");
+}
+
 function loadVideo() {
     passVideo = localStorage.getItem(videoPath);
     localStorage.setItem("videoPath", "");
@@ -1159,6 +1159,56 @@ function getVideoName() {
         videoName = longVideoName;
     }
     return videoName;
+}
+
+function checkDatabase() {
+    var labelPromise = database.ref().child(videoName + '/labels/').once("value")
+        .then(function(snapshot) {
+            return snapshot.val();
+        });
+    var annotationPromise = database.ref().child(videoName + '/annotations/').once("value")
+        .then(function(snapshot) {
+            return snapshot.val();
+        });
+    labelPromise.then(function(labels) {
+        for (label in labels) {
+            annotationPromise.then(function(annotations) {
+                // CONSTRUCT LABEL HERE (label is the variable for the name, labels[label] will give you the color)
+                buildLabel(label, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
+                for (annotation in annotations) {
+                    if (annotation.includes(label)) {
+                        var detailsPromise = database.ref().child('/annotations/' + annotations[annotation]).once("value")
+                            .then(function(snapshot) {
+                                return snapshot.val();
+                            });
+                        detailsPromise.then(function(details) {
+                            // CONSTRUCT ANNOTATION HERE (using data examples below)
+                            buildAnnotation(annotation, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
+                            console.log('annotation: ' + annotation);
+                            console.log('label: ' + label);
+                            console.log('color: ' + labels[label]);
+                            console.log('key: ' + annotations[annotation]);
+                            console.log('x: ' + details.x);
+                            console.log('y: ' + details.y);
+                            console.log('w: ' + details.w);
+                            console.log('h: ' + details.h);
+                            console.log('end: ' + details.end);
+                            console.log('start: ' + details.start);
+                        });
+                    }
+                }
+            })
+        }
+    });
+}
+
+function buildLabel(name, color) {
+    
+}
+
+function buildAnnotation(name, color) {
+    // maybe it would be nice to jump the playhead to the last annotation we added idk
+    // Need to make sure that the numbering of new annotations starts from wherever the existing annotations finishes, not sure how best to do that.
 }
 
 function firebaseNewLabel(label, color, videoName) {
@@ -1211,6 +1261,8 @@ function removeAnnotation(labelID) {
             });
     });
 }
+
+
 
 /*function getAnnotation() {
     var searchKey = document.getElementById("annotation-id-edit").value;
