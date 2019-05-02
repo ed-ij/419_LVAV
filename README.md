@@ -28,7 +28,7 @@ A step by step series of examples that tell you how to get a development env run
 Clone the git repository
 
 ```
-https://github.com/edward-ij/419_LsVAV.git
+https://github.com/edward-ij/419_LVAV.git
 ```
 
 Setup a .gitconfig file by replacing the capitalized sections and placing it in your main user area
