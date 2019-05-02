@@ -1,6 +1,10 @@
 # Project Title
 
-One Paragraph of project description goes here
+This Large-scale Video Annotation and Visualization (LVAV) project was commissioned to fullfill a need for an open accessible platform for flexible & manual annotation of large quantities of video footage. The specific use case being designed for is video deep learning but we are aware that there are potentially far more applications. 
+
+The main objectives of the active LVAV project currently consist of developing a web app to speed up video annotation of student engagement activities (reading, writing, talking).
+
+This project was initiated and sponsored by the [Advancing Out-of-School Learning in Mathematics and Engineering (AOLME) project](https://aolme.unm.edu/).
 
 ## Getting Started
 
@@ -10,9 +14,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Give examples
-```
+1) Get a text editor, we recommend using [Atom](https://atom.io/) for a nice code editing experience from 
+2) Install a Git revision control system, we like [GitHub Desktop](https://desktop.github.com/) for it's full GitHub compatibility and ease of use
+3) A modern browser for testing (Chrome 72 recommended, go to chrome://settings/help on chrome to find out the version you are using)
+4) Some features have to be tested remotely as for security reasons they cannot be tested locally, if think you may need to do this check out the "Setup for Testing Server Functionality" section
 
 ### Installing
 
