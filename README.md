@@ -63,6 +63,7 @@ Under development...(Add additional notes about how to deploy this on a live sys
 
 * [Firebase](https://firebase.google.com/) - The database platform and API used
 * [jQuery File Tree](https://www.abeautifulsite.net/jquery-file-tree) - Used to generate the server file tree
+* [jQuery](https://jquery.com/) - Required for the above file tree plugin
 
 ## Contributing
 
