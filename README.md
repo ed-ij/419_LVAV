@@ -1,6 +1,7 @@
-# **L**arge-scale **V**ideo **A**nnotation and **V**isualization (LVAV)
+# Large-scale Video Annotation and Visualization
+# (LVAV)
 
-This Large-scale Video Annotation and Visualization (LVAV) project was commissioned to fullfill a need for an open accessible platform for flexible & manual annotation of large quantities of video footage. The specific use case being designed for is video deep learning but we are aware that there are potentially far more applications. 
+This project was commissioned to fullfill a need for an open accessible platform for flexible & manual annotation of large quantities of video footage. The specific use case being designed for is video deep learning but we are aware that there are potentially far more applications. 
 
 The main objectives of the active LVAV project currently consist of developing a web app to speed up video annotation of student engagement activities (reading, writing, talking).
 
