@@ -80,6 +80,9 @@ var newBox;
 var busy1 = false;
 var busy2 = false;
 
+var loadlock = false;
+var annolock = false;
+
 
 // for firebase integration:
 var database;
@@ -430,7 +433,7 @@ if (supportsVideo) {
         });
 
 
-//NEW STUFF
+        //NEW STUFF
         labelContainer.addEventListener('click', function(e) {
             if(e.target && e.target.name == "nabox")
             {
@@ -442,19 +445,19 @@ if (supportsVideo) {
                     var myid = e.target.id;
 
                     var annotationPromise = database.ref().child(videoName + '/annotations/' + myid).once("value")
-                        .then(function(snapshot) {
-                            return snapshot.val();
-                        });
+                    .then(function(snapshot) {
+                        return snapshot.val();
+                    });
                     annotationPromise.then(function(key) {
                         var annotationDetails = database.ref().child('/annotations/' + key).once("value")
-                            .then(function(snapshot) {
-                                return snapshot.val();
-                            })
-                            .then(function(details) {
-                                showAnno(details.color, details.x, details.y, details.w, details.h, ctx);
-                                video.currentTime = details.start;
-                            });
+                        .then(function(snapshot) {
+                            return snapshot.val();
+                        })
+                        .then(function(details) {
+                            showAnno(details.color, details.x, details.y, details.w, details.h, ctx);
+                            video.currentTime = details.start;
                         });
+                    });
                 }
             }
         });
@@ -564,7 +567,11 @@ function submitLabel(color, label) {
 
 
     labelnameDiv.id = "labelnameDiv";
-    labelnameDiv.innerHTML = document.getElementById("namebox").value;
+
+    if(loadlock == true)
+        labelnameDiv.innerHTML = label;
+    else
+        labelnameDiv.innerHTML = document.getElementById("namebox").value;
 
 
     addNew.id = "addNew";
@@ -577,7 +584,15 @@ function submitLabel(color, label) {
 
 
 
-    newLabelCreate.removeChild(newButton);
+    if(loadlock == true)
+    {
+    }
+    else
+    {
+        newLabelCreate.removeChild(newButton);
+        loadlock = false;
+    }
+
     caDiv.appendChild(lbText);
     caDiv.appendChild(labelnameDiv);
     createAnnotation.appendChild(caDiv);
@@ -686,8 +701,18 @@ function createNewAnnotation(color, label, index, e) {
     /*invisibox.appendChild(newAnnotationBox);
     invisibox.appendChild(nAB);*/
 
-    e.appendChild(newAnnotationBox);
-    e.appendChild(nAB);
+    if(annolock == false)
+    {
+        e.appendChild(newAnnotationBox);
+        e.appendChild(nAB);
+    }
+    else
+    {
+        e = invisibox;
+        e.appendChild(newAnnotationBox);
+        e.appendChild(nAB);
+    }
+
 
     //nAB.style.display = "none";
 
@@ -1191,13 +1216,13 @@ function getVideoName() {
 
 function checkDatabase() {
     var labelPromise = database.ref().child(videoName + '/labels/').once("value")
-        .then(function(snapshot) {
-            return snapshot.val();
-        });
+    .then(function(snapshot) {
+        return snapshot.val();
+    });
     var annotationPromise = database.ref().child(videoName + '/annotations/').once("value")
-        .then(function(snapshot) {
-            return snapshot.val();
-        });
+    .then(function(snapshot) {
+        return snapshot.val();
+    });
     labelPromise.then(function(labels) {
         for (label in labels) {
             annotationPromise.then(function(annotations) {
@@ -1206,9 +1231,9 @@ function checkDatabase() {
                 for (annotation in annotations) {
                     if (annotation.includes(label)) {
                         var detailsPromise = database.ref().child('/annotations/' + annotations[annotation]).once("value")
-                            .then(function(snapshot) {
-                                return snapshot.val();
-                            });
+                        .then(function(snapshot) {
+                            return snapshot.val();
+                        });
                         detailsPromise.then(function(details) {
                             // CONSTRUCT ANNOTATION HERE (using data examples below)
                             buildAnnotation(annotation, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
@@ -1232,12 +1257,19 @@ function checkDatabase() {
     });
 }
 
-function buildLabel(name, color) {
+function buildLabel(id, color) {
 
+    loadlock = true;
+    submitLabel(color, id);
 }
 
-function buildAnnotation(name, color) {
+function buildAnnotation(id, color) {
     // Need to make sure that the numbering of new annotations starts from wherever the existing annotations finishes, not sure how best to do that.
+    var index;
+    var e;
+
+    annolock = true;
+    createNewAnnotation(color, id, index, e)
 }
 
 function firebaseNewLabel(label, color, videoName) {
@@ -1298,39 +1330,39 @@ function printAnnotations() {
     var printStatement = "Video: " + videoName + "\n\n";
     var ref = database.ref(videoName + '/annotations/');
     promiseTest = ref.orderByChild('label').once("value")
-    .then(function(snapshot) {
+        .then(function(snapshot) {
         var reads = [];
         snapshot.forEach(function(annotation) {
             annotationKey = annotation.val();
             var detailsPromise = database.ref().child('/annotations/' + annotationKey).once("value")
-                .then(function(details) {
-                    var processedTime = new Date (details.val().timestamp);
-                    var localDateString = processedTime.toLocaleDateString(undefined, {
-                        day : 'numeric',
-                        month : 'short',
-                        year : 'numeric'
-                    })
-                    var localTimeString = processedTime.toLocaleTimeString(undefined, {
-                        hour: '2-digit',
-                    	minute: '2-digit',
-                    	second: '2-digit'
-                    })
-                    printStatement = printStatement
-                                + "Label: " + details.val().label + "\n"
-                                + "Timestamp: " + localTimeString + ", " + localDateString + "\n"
-                                + "x: " + details.val().x + "\n"
-                                + "y: " + details.val().y + "\n"
-                                + "w: " + details.val().w + "\n"
-                                + "h: " + details.val().h + "\n"
-                                + "Start Time: " + details.val().start + "\n"
-                                + "End Time: " + details.val().end + "\n\n";
-                    return details.val();
-                }, function(error) {console.error(error);});
-                reads.push(detailsPromise);
-            });
+            .then(function(details) {
+                var processedTime = new Date (details.val().timestamp);
+                var localDateString = processedTime.toLocaleDateString(undefined, {
+                    day : 'numeric',
+                    month : 'short',
+                    year : 'numeric'
+                })
+                var localTimeString = processedTime.toLocaleTimeString(undefined, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })
+                printStatement = printStatement
+                    + "Label: " + details.val().label + "\n"
+                    + "Timestamp: " + localTimeString + ", " + localDateString + "\n"
+                    + "x: " + details.val().x + "\n"
+                    + "y: " + details.val().y + "\n"
+                    + "w: " + details.val().w + "\n"
+                    + "h: " + details.val().h + "\n"
+                    + "Start Time: " + details.val().start + "\n"
+                    + "End Time: " + details.val().end + "\n\n";
+                return details.val();
+            }, function(error) {console.error(error);});
+            reads.push(detailsPromise);
+        });
         return Promise.all(reads);
     }, function(error) {console.error(error);})
-    .then(function(values) {
+        .then(function(values) {
         //window.alert(printStatement);
         var printArea = document.getElementById('modal-inner');
         printArea.innerText = printStatement;
@@ -1343,28 +1375,28 @@ function printCSV() {
     var printStatement = "Video: " + videoName + "\n\nlabel,timestamp,x,y,w,h,start,end,\n\n";
     var ref = database.ref(videoName + '/annotations/');
     promiseTest = ref.orderByChild('label').once("value")
-    .then(function(snapshot) {
+        .then(function(snapshot) {
         var reads = [];
         snapshot.forEach(function(annotation) {
             annotationKey = annotation.val();
             var detailsPromise = database.ref().child('/annotations/' + annotationKey).once("value")
-                .then(function(details) {
-                    printStatement = printStatement
-                                + details.val().label + ","
-                                + details.val().timestamp + ","
-                                + details.val().x + ","
-                                + details.val().y + ","
-                                + details.val().w + ","
-                                + details.val().h + ","
-                                + details.val().start + ","
-                                + details.val().end + ",\n";
-                    return details.val();
-                }, function(error) {console.error(error);});
-                reads.push(detailsPromise);
-            });
+            .then(function(details) {
+                printStatement = printStatement
+                    + details.val().label + ","
+                    + details.val().timestamp + ","
+                    + details.val().x + ","
+                    + details.val().y + ","
+                    + details.val().w + ","
+                    + details.val().h + ","
+                    + details.val().start + ","
+                    + details.val().end + ",\n";
+                return details.val();
+            }, function(error) {console.error(error);});
+            reads.push(detailsPromise);
+        });
         return Promise.all(reads);
     }, function(error) {console.error(error);})
-    .then(function(values) {
+        .then(function(values) {
         //window.alert(printStatement);
         var printArea = document.getElementById('modal-inner');
         printArea.innerText = printStatement;
@@ -1373,7 +1405,7 @@ function printCSV() {
 }
 
 span.onclick = function() {
-  modal.style.display = "none";
+    modal.style.display = "none";
 }
 /*function getAnnotation() {
     var searchKey = document.getElementById("annotation-id-edit").value;

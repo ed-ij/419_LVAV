@@ -595,3 +595,8 @@ background-color: darkgray;
   text-decoration: none;
   cursor: pointer;
 }
+
+#print{
+    position: relative;
+    top: 50px;
+}
