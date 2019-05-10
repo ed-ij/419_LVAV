@@ -12,7 +12,6 @@ var labelName;
 var labelBox;
 var newButton;
 var newLabel;
-//var annArray = [];
 var cow = 0;
 var newAnnotationBox = null;
 var nAB = null;
@@ -20,7 +19,6 @@ var a;
 
 
 var idArray = [];
-
 var labelArray = [];
 
 var annotationList = [];
@@ -70,11 +68,10 @@ var finalize;
 var btAssign;
 var endAssign;
 var check;
-var newLabelCreate = document.getElementById('new-new');
+var newLabelCreate = document.getElementById('new-new');    
 var labelContainer = document.getElementById('label-home');
 labelContainer.id = "labelContainer";
-//var labelPods = document.createElement('div');
-//labelContainer.appendChild(labelPods);
+
 var newBox;
 
 var busy1 = false;
@@ -83,29 +80,20 @@ var busy2 = false;
 var loadlock = false;
 var annolock = false;
 
+var labelarray = [];
+var annoarray = [];
+var colorarray = [];
+
 
 // for firebase integration:
 var database;
 
-
-/*window.setInterval(redraw, 250); // Call redraw every second.
-window.onbeforeunload = function(){
-    sessionStorage.time = video.currentTime;
-    return null;
-}
-window.onload = function() {
-    var time = sessionStorage.getItem(time);
-}*/
-
 canvas.className = "canvases";
-videoDiv.appendChild(canvas);
+videoDiv.appendChild(canvas);       //append the canvas to the video container so that canvas has same dimensions as video
 canvas.style.position = 'relative';
-//video.currentTime = sessionStorage.time;
-//canvas.style.zIndex = video.zIndex + 1;
-//video.addEventListener("play", redraw);
 canWidth = canvas.width;
 canHeight = canvas.height;
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d"); //Used to create the drawable annotation rectangle
 
 var supportsVideo = !!document.createElement('video').canPlayType;
 
@@ -130,6 +118,7 @@ if (supportsVideo) {
     var progressBar = document.getElementById('progress-bar');
     var fullscreen = document.getElementById('fs');
 
+    //For video current-time and video duration next to progress bar.
     var currentTime = document.getElementById('current-time');
     currentTime.style.position = "relative";
     currentTime.style.display = "inline-block";
@@ -300,35 +289,7 @@ if (supportsVideo) {
             progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
         });
 
-        // React to the user clicking within the progress bar
-
-        //    progress.addEventListener('click', function(e) {
-        //var pos = (e.pageX  - this.offsetLeft) / this.offsetWidth; // Also need to take the parent into account here as .controls now has position:relative
-        /*var pos = (e.pageX  - (this.offsetLeft + this.offsetParent.offsetLeft)) / this.offsetWidth;
-            video.currentTime = pos * video.duration;*/
-
-        /*var x = e.pageX - this.offsetLeft;
-            var x = x - this.offsetParent.offsetLeft;
-            var clickedVal = x * progress.max / progress.offsetWidth;
-
-            video.currentTime = clickedVal;*/
-
-
-
-
-
-        //   });
-
-
-
-        /*   function clickedBar(e){
-            if(!myMovie.paused && !myMovie.ended){
-                var mouseX=e.pageX-bar.offsetLeft;
-                var newtime=mouseX*myMovie.duration/barSize;
-                myMovie.currentTime=newtime;
-                progressBar.style.width=mouseX+'px';
-            }
-        }*/
+    
         // Listen for fullscreen change events (from other controls, e.g. right clicking on the video itself)
         document.addEventListener('fullscreenchange', function(e) {
             setFullscreenData(!!(document.fullScreen || document.fullscreenElement));
@@ -348,35 +309,45 @@ if (supportsVideo) {
         checkDatabase();
 
         newLabel = document.getElementById('create-new');
-        newLabel.addEventListener('click', function() { //Create New Label is pressed.
+        
+        
+        
+        //Create New Label is pressed.
+        newLabel.addEventListener('click', function() { 
 
             if(busy1 == false)
             {
                 busy1 = true;
-                createNewLabel();
+                createNewLabel(); //Creates box to select color and enter label name
             }
         });
 
+        
         newBox = document.getElementById('new-new'); //container holding all new labels
-        newBox.addEventListener('click', function(e){ //Submit is pressed
-            if(e.target && e.target.id == "submit")
+        
+        //The next few event listeners use "event delegation" since the items created are done so dynamically within the browser. if(e.target && e.target.id == "<id of element clicked>" signifies event delegation);
+        
+        //Once name is entered, color is picked and Submit is pressed
+        newBox.addEventListener('click', function(e){ 
+            if(e.target && e.target.id == "submit") //Event delagation
             {
 
                 color = document.getElementById("colorPick").value;
                 label = document.getElementById("namebox").value;
 
-                submitLabel(color, label);
+                loadlock = false; 
+                submitLabel(color, label);  //New label is made using color and label name
 
             }
         });
 
 
 
-        labelContainer.addEventListener('click', function(e) { //Create New Annotation is pressed
+        //Create New Annotation is pressed
+        labelContainer.addEventListener('click', function(e) { 
             var num = 0;
-            if(e.target && e.target.id == "addNew")
+            if(e.target && e.target.id == "addNew") //Event delegation
             {
-                //console.log(e.target.parentElement.parentElement.children);
                 color = e.target.parentElement.style.backgroundColor;
                 label = e.target.parentElement.id;
                 var boxInd;
@@ -385,7 +356,8 @@ if (supportsVideo) {
                     busy2 = true;
                     var numibox = document.getElementsByTagName('tot');
 
-                    for(var i = 0; i < numibox.length; i++) {
+                    //Loop is for the numbers on the annotation box: skin:1, skin:2, etc.
+                    for(var i = 0; i < numibox.length; i++) { 
                         if(e.target.parentElement == numibox[i]) {
                             boxInd = i;
                         }
@@ -400,11 +372,14 @@ if (supportsVideo) {
         });
 
 
+        //Finalize is pressed
         labelContainer.addEventListener('click', function(e) {
 
             if(e.target && e.target.id == "finalize") {
                 busy1 = false;
                 busy2 = false;
+                
+                //Data is stored in database
                 finalizeNewAnno(e.target.parentElement.style.backgroundColor);
                 var dad = e.target.parentElement;
                 dad.parentElement.removeChild(nAB);
@@ -413,6 +388,7 @@ if (supportsVideo) {
 
         });
 
+        //Delete annotation
         labelContainer.addEventListener('click', function(e) {
             if(e.target && e.target.id == "delete") {
                 var thisid = e.target.parentElement.id;
@@ -433,15 +409,13 @@ if (supportsVideo) {
         });
 
 
-        //NEW STUFF
+        //Once an annotation is finalized, if clicked it will display the annotation box on canvas and video current time will jump to the annotation begin time.
         labelContainer.addEventListener('click', function(e) {
             if(e.target && e.target.name == "nabox")
             {
-                //console.log("works");
+                
                 if(busy1 == false && busy2 == false)
                 {
-                    //redraw();
-                    //discardAnnotation();
                     var myid = e.target.id;
 
                     var annotationPromise = database.ref().child(videoName + '/annotations/' + myid).once("value")
@@ -464,23 +438,12 @@ if (supportsVideo) {
     }
 }
 
+//If video is clicked, progress is paused. 
 canvas.addEventListener('click', function() {
     if(video.paused == false)
         video.pause();
 
 });
-
-/*
-labelContainer.addEventListener('click', function(e){
-
-    if(e.target && e.target.id == "invisibox")
-    {
-
-    }
-});
-*/
-
-
 
 
 //Start New Shit
@@ -540,15 +503,10 @@ function createNewLabel() { //Creates box in which you can name label and select
 // new Annotation button.
 function submitLabel(color, label) {
 
-    /*color = document.getElementById("colorPick").value;
-    label = document.getElementById("namebox").value;*/
-
     createAnnotation = document.createElement('div');
     labelnameDiv = document.createElement('div');
     caDiv = document.createElement('div');
     addNew = document.createElement('button');
-
-
 
     createAnnotation.id = label;
     createAnnotation.className = "createAnnotation";
@@ -556,15 +514,11 @@ function submitLabel(color, label) {
     createAnnotation.style.color = "white";
     createAnnotation.style.margin = "1px";
 
-
-
     caDiv.id = "caDiv";
-
 
     lbText = document.createElement('div');
     lbText.id = "lbText";
     lbText.innerHTML = "LABEL: ";
-
 
     labelnameDiv.id = "labelnameDiv";
 
@@ -586,6 +540,7 @@ function submitLabel(color, label) {
 
     if(loadlock == true)
     {
+        
     }
     else
     {
@@ -593,6 +548,7 @@ function submitLabel(color, label) {
         loadlock = false;
     }
 
+    
     caDiv.appendChild(lbText);
     caDiv.appendChild(labelnameDiv);
     createAnnotation.appendChild(caDiv);
@@ -602,7 +558,6 @@ function submitLabel(color, label) {
     invisibox.appendChild(createAnnotation);
     invisibox.id = "invisibox";
     labelContainer.appendChild(invisibox);
-    //createAnnotation.addEventListener('click',createNewAnnotation);
 
 }
 
@@ -722,42 +677,11 @@ function createNewAnnotation(color, label, index, e) {
     //annArray.push(newAnnotationBox);
 }
 
-
+//Draw annotation box and get begin and end times
 function drawEditAnnotation() {
-    /* if(check.parentElement.style.border == "5px solid lime") //draw annotation already selected
-    {
-        check.parentElement.style.border == "none";
-        canvas.addEventListener('mouseover', function(){
-            canvas.style.cursor = "default";
-        } );
-
-
-    }
-    else //new draw annotation selected
-    {*/
-    /* var all = document.getElementsByTagName('*');
-
-        for(var i = 0; i < all.length; i++)
-        {
-            all[i].style.border = "none";
-        }
-
-        var allbils = document.getElementsByTagName('bil');
-
-        for(var i = 0; i < allbils.length; i++)
-        {
-            if(allbils[i].id != check.id)
-                allbils[i].style.display = "none";
-            else
-                allbils[i].style.display = "block";
-
-        }*/
-
-
-
-
-
-
+    
+    
+    //Set begin time
     btAssign.addEventListener('click', function(){
 
         getStartTime = video.currentTime;
@@ -767,6 +691,7 @@ function drawEditAnnotation() {
 
     });
 
+    //Set end time
     endAssign.addEventListener('click', function(){
 
 
@@ -777,18 +702,23 @@ function drawEditAnnotation() {
 
     });
 
+    //Mouse on canvas will show cursor as crosshair
     canvas.addEventListener('mouseover', function(){
         canvas.style.cursor = "crosshair";
     } );
+    
+    //On canvas click to begin drawing annotation box
     canvas.addEventListener('mousedown', mouseDown);
+    
+    //End drawing annotation box
     canvas.addEventListener('mouseup', mouseUp, false);
+    
+    //Size annotation box
     canvas.addEventListener('mousemove', mouseMove, false);
 
-
-    //}
 }
 
-
+//Finalize annotation by storing data in database
 function finalizeNewAnno(color) {
     var x, y, w, h;
     x = currentAnnotation.x;
@@ -801,6 +731,7 @@ function finalizeNewAnno(color) {
     var newAnnotationStatus = firebaseUpdate(newAnnotationKey, newAnnotationBox.id, getStartTime, getEndTime, x, y, w, h, videoName, color);
 }
 
+//Will show annotation box if finalized annotation has been clicked
 function showAnno(color, x, y, w, h, ctx) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
@@ -814,20 +745,15 @@ function showAnno(color, x, y, w, h, ctx) {
     //console.log("color:" + color + "x: " + x + "y: " + y, "w: " + w, "h: " + h);
 }
 
-//END My code/*
+//END My code
 function mouseDown(e) {
     // Calculate relative mouse coordinates.
     video.pause();
-    var pos = getPosition(canvas);
+    var pos = getPosition(canvas); //Gets location on canvas where clicked
 
     mouseX = e.pageX - pos.x;
     mouseY = e.pageY - pos.y;
 
-
-
-    /*var xPos = event.pageX - pos.x;
-    var yPos = event.pageY - pos.y;
-	*/
     mouseX *= canvas.width/canvas.offsetWidth;
     mouseY *= canvas.height/canvas.offsetHeight;
 
@@ -835,6 +761,7 @@ function mouseDown(e) {
 
     if (currentAnnotation == null) {
 
+        //Sends location on canvas to various functions
         startAnnotation(mouseX, mouseY);
     }
     else if (checkCloseEnough(mouseX, currentAnnotation.x) && checkCloseEnough(mouseY, currentAnnotation.y)) {
@@ -862,6 +789,7 @@ function mouseDown(e) {
     }
 }
 
+//Gets location of mouse click on canvas
 function getPosition(element) {
     var xPosition = 0;
     var yPosition = 0;
@@ -875,6 +803,7 @@ function getPosition(element) {
     return { x: xPosition, y: yPosition };
 }
 
+//Sets start point of annotation box at mouseclick
 function startAnnotation(x, y) {
 
     currentAnnotation =  new Annotation();
@@ -892,10 +821,12 @@ function startAnnotation(x, y) {
         dragBR = true;
     }
 
+    //Clears then draws anno
     redraw();
     showInputField();
 }
 
+//Exists from old code
 function finalizeAnnotation() {
     if (!currentAnnotation) {
         return;
@@ -933,6 +864,7 @@ function finalizeAnnotation() {
     hideInputField();
 }
 
+//Use this to stop displaying of finished annotation
 function discardAnnotation() {
     currentAnnotation = null;
     //hideInputField();
@@ -940,6 +872,7 @@ function discardAnnotation() {
     redraw();
 }
 
+//From old code creates the annotation box
 function drawAnnotation(ann, ctx) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
@@ -948,23 +881,17 @@ function drawAnnotation(ann, ctx) {
     ctx.rect(ann.x + 0.5,ann.y + 0.5, ann.w, ann.h);
     ctx.stroke();
     if (currentAnnotation!=null){
+        //Draws the handles at corners of box
         drawHandles();  }
 }
 
-
-
-
-
+//Clears previous annotation box then draws new one
 function redraw() {
-
-    /*var currentTime = video.currentTime;
-    if (editting == false){
-        document.getElementById("end-time").value = currentTime; //change this if editting so it doesn't get weird.
-    }*/
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (currentAnnotation) {
+        //Draws new annotation
         drawAnnotation(currentAnnotation, ctx);
     }
 
@@ -982,6 +909,7 @@ function drawSquare(x, y, radius) {
     ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius);
 }
 
+//Draws handles on corners of annotation box
 function drawHandles() {
     drawSquare(currentAnnotation.x, currentAnnotation.y, closeEnough);
     drawSquare(currentAnnotation.x + currentAnnotation.w, currentAnnotation.y, closeEnough);
@@ -993,6 +921,7 @@ function checkCloseEnough(p1, p2) {
     return Math.abs(p1 - p2) < closeEnough;
 }
 
+//Ceases resizing annotation box
 function mouseUp() {
     dragTL = false;
     dragTR = false;
@@ -1000,6 +929,7 @@ function mouseUp() {
     dragBR = false;
 }
 
+//Scales box
 function mouseMove(e) {
     if (currentAnnotation!=null){
         pos = getPosition(canvas);
@@ -1030,6 +960,7 @@ function mouseMove(e) {
     }
 }
 
+//From old code
 function updateList() {
     var currentTime = video.currentTime;
     var contentList = document.getElementById("annotation-list");
@@ -1077,6 +1008,7 @@ function updateList() {
     contentList.appendChild(list);
 }
 
+//From old code
 function removeAnno(index){
     var sure = window.confirm("Remove this annotation? (This will remove the database entry)");
     if (sure == true){
@@ -1109,6 +1041,7 @@ function removeAnno(index){
     }
 }
 
+//From old code
 function editAnno(index){ //this needs some adjustments still
     currentAnnotation = annotationList[index];
     video.currentTime = currentAnnotation.start;
@@ -1119,22 +1052,26 @@ function editAnno(index){ //this needs some adjustments still
     editting=true;
 }
 
+//From old code
 function showInputField() {
     var inputArea = document.getElementById("input-area");
     document.getElementById("input-area").value = "1";
     inputArea.style.display = "block";
 }
 
+//From old code
 function startbut() {
     document.getElementById("start-time").value = video.currentTime;
     currentAnnotation.start = video.currentTime;
 }
 
+//From old code
 function endbut() {
     document.getElementById("end-time").value =video.currentTime;
     currentAnnotation.end = video.currentTime;
 }
 
+//From old code
 function playSegment(start, end){
     video.pause();
     var source = video.src;
@@ -1144,6 +1081,7 @@ function playSegment(start, end){
     playingSeg = true;
 }
 
+//From old code
 function hideInputField() {
     var inputArea = document.getElementById("input-area");
     document.getElementById("start-time").value = "";
@@ -1152,10 +1090,12 @@ function hideInputField() {
     inputArea.style.display = "none";
 }
 
+//From old code
 function compareAnnotations(a, b) {
     return a.start - b.start;
 }
 
+//From old code
 function Annotation() {
     var username = "";
     var dbID = -1;
@@ -1169,10 +1109,7 @@ function Annotation() {
     var changed = false;
 }
 
-
-
 // Firebase Integration Functions
-
 function init() {
     // Initialize Firebase
     var config = {
@@ -1214,6 +1151,7 @@ function getVideoName() {
     return videoName;
 }
 
+
 function checkDatabase() {
     var labelPromise = database.ref().child(videoName + '/labels/').once("value")
     .then(function(snapshot) {
@@ -1224,10 +1162,12 @@ function checkDatabase() {
         return snapshot.val();
     });
     labelPromise.then(function(labels) {
-        for (label in labels) {
+        for (label in labels) {   
             annotationPromise.then(function(annotations) {
+                /*labelarray.push(label);
+                colorarray.push(labels[label]);*/
                 // CONSTRUCT LABEL HERE (label is the variable for the name, labels[label] will give you the color)
-                buildLabel(label, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
+                //buildLabel(label, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
                 for (annotation in annotations) {
                     if (annotation.includes(label)) {
                         var detailsPromise = database.ref().child('/annotations/' + annotations[annotation]).once("value")
@@ -1236,7 +1176,9 @@ function checkDatabase() {
                         });
                         detailsPromise.then(function(details) {
                             // CONSTRUCT ANNOTATION HERE (using data examples below)
-                            buildAnnotation(annotation, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
+                           //buildAnnotation(annotation, labels[label]); 
+                            
+                            // this is just an idea to make the code neater, pass more of the variables if you need to
                             /*
                             console.log('annotation: ' + annotation);
                             console.log('label: ' + label);
