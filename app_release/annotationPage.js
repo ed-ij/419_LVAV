@@ -1134,7 +1134,7 @@ function loadVideo() {
     }
     localStorage.setItem("videoPath", "");
     if (video.getAttribute("src") == "" && passVideo == "") {
-        window.location.href = fileTreePageAddress;
+        window.location.href = fileTreePage;
     }
     else if (video.getAttribute("src") != passVideo && passVideo != "") {
         video.src = passVideo;

@@ -40,25 +40,41 @@ Setup a `.gitconfig` file by replacing the capitalized sections and placing it i
         email = <EMAIL>
 ```
 
-Setup the `.gitignore` file
+The `.gitignore` file should have downloaded and look something like this:
 
 ```
-will include files that contain sensitive info that should not end up on GitHub
+#these files will not be synchronized between users for security reasons
+
+*/app_config.js
+
+#this ensures files that contain sensitive info do not end up on GitHub
 ```
 
-Make a copy of the `app_config_template.js` file and rename it `app_config.js`
+Make a copy of the `app_config_template.js` file and rename it `app_config.js`.
+Fill out the relevant data about your Firebase project, server address etc.
+
+For example if our videos were being stored here: `https://examplemediaserver.com/myarea/videos/` you would change part of the config file to
 
 ```
+...
+// this is the root directory for the file structure you want to get videos from
+var annotationServer = "https://examplemediaserver.com/myarea/videos/`";
+// this is generally the same as above but has been setup to allow different structures
+// if you need to browse the files in a separate file structure for any reason
+var fileTreeServer = annotationServer;
 
+var config = {
+    // this data can be copied and pasted from the firebase console
+    // first select "Add app" from just below the project name
+    // then selecting the web app icon
+    // give your app a nickname and copy the config data across
+    apiKey: "jhbaQODGHHWbwk",
+    authDomain: "example.firebaseapp.com",
+    ...
+};
 ```
 
-Setup the `fileTree_config.js` file
-
-```
-
-```
-
-Set the firebase Authentication to allow anonymous sign in, then setup the Firebase Database Rules as follows:
+Set the firebase Authentication to allow anonymous sign in (there is a toggle switch in the Firebase console), then setup the Firebase Database Rules as follows:
 
 ```
 {
@@ -70,7 +86,9 @@ Set the firebase Authentication to allow anonymous sign in, then setup the Fireb
   }
 }
 ```
-From a file browser double-click the `Release/annotate_noServer.html` to run the file
+Upload the files onto a webserver in their current structure apart from `jqueryFileTree.php` which needs to be placed on the server where the videos are being stored in order for the file tree to work.
+
+
 
 ### Coding Style info
 
