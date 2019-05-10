@@ -24,7 +24,8 @@
 
         <figure id="videoContainer" data-fullscreen="false">        <!-- THE VIDEO PLAYER -->
             <div id='vid-div'>
-                <video id="video" src="https://ece46medsrv.ece.unm.edu/non_irb_videos/Antonia/BackCameraClips/Eating1Round1_q2.mp4" class="video">
+                <video id="video" src="" class="video">
+                <!-- <video id="video" src="https://examplesite.com/pathtovideo/videoname.mp4" class="video"> // for testing/not running on a server -->
                 </video>
             </div>
 
@@ -61,13 +62,13 @@
 
         </div>
         <!-- Firebase Database Setup -->
-        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-app.js"></script> <!-- get the basic firebase API -->
+        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-auth.js"></script> <!-- get the firebase authorisation API -->
+        <script src="https://www.gstatic.com/firebasejs/5.9.4/firebase-database.js"></script> <!-- get the firebase database API -->
 
-        <script src="app_config.js"></script>
-        <script src="annotationPage.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="app_config.js"></script> <!-- setup the specific variables required for your implementation  -->
+        <script src="annotationPage.js"></script> <!-- get the functions required for this page -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> <!-- get JQuery -->
 
         <script> //GETS VIDEO DURATION AND SETS RIGHT SIDE COUNTER
             window.setInterval(function(t){

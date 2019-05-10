@@ -60,13 +60,15 @@
 		<script src="jquery.js" type="text/javascript"></script>
 		<script src="jqueryFileTree.js" type="text/javascript"></script>
 		<link href="jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-
+		<!-- FILE TREE PLUGIN CALLS -->
 		<script type="text/javascript">
 
 			$(document).ready( function() {
-
+				// this sets up the file tree we are using, the important part is the 'root:' as this sets what folder the file tree starts in
 				$('#fileTree').fileTree({ root: fileTreeServer, folderEvent: 'click', expandSpeed: 300, collapseSpeed: 300, multiFolder: true }, function(file) {
-					var videoPath = document.getElementById("videoPath");
+
+					var videoPath = document.getElementById("videoPath"); // get the videoPath box
+					// put the video path into the videoPath box and make sure it has the actual address of the video
             		videoPath.value = file.replace(fileTreeServer, annotationServer);
 				});
 
@@ -84,20 +86,23 @@
 
 		<div class="example">
 			<h2>Choose a video from the folder tree below</h2>
-			<div id="fileTree" class="fileTreeDiv"></div>
+			<div id="fileTree" class="fileTreeDiv"> <!-- FILE TREE IS CREATED IN THIS DIV --> </div>
 		</div>
+
 		<div style="display: block; position: fixed; top: 560px; left: 30px;">
-			<textarea id="videoPath" class="videoPathDiv">
+			<textarea id="videoPath" class="videoPathDiv"> <!-- videoPath is shown to the user in this div -->
 			</textarea>
 			<button onclick="loadVideo()">Select</button>
 		</div>
 
 	</body>
+	<!-- function to save video path to local storage so it can be accessed by other pages
+		then redirects to the annotationPage -->
 	<script type="text/javascript">
 		function loadVideo() {
 			var videoPath = document.getElementById("videoPath").value;
-			localStorage.setItem("videoPath", videoPath);
-			window.location.href = annotationPage;
+			localStorage.setItem("videoPath", videoPath); // set local variable equal to the path
+			window.location.href = annotationPage; // redirecting the page
 		}
 	</script>
 </html>

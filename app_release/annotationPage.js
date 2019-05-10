@@ -1122,33 +1122,35 @@ function Annotation() {
 // Firebase Integration Functions
 
 function init() {
-    // Initialize Firebase
+    // Initialize Firebase using the config variables in app_config.js
     firebase.initializeApp(config);
     database = firebase.database();
     console.log("Database setup complete");
 }
 
 function loadVideo() {
+    // check if there is a videoPath currently stored in the local variable
     if ("videoPath" in localStorage) {
-        passVideo = localStorage.getItem("videoPath");
+        passVideo = localStorage.getItem("videoPath"); // read the path
     }
-    localStorage.setItem("videoPath", "");
+    localStorage.setItem("videoPath", ""); // delete the path so it doesn't cause issues next time
     if (video.getAttribute("src") == "" && passVideo == "") {
-        window.location.href = fileTreePage;
+        window.location.href = fileTreePage; // if there is no path redirect to the fileTree loadPage.html
     }
     else if (video.getAttribute("src") != passVideo && passVideo != "") {
-        video.src = passVideo;
+        video.src = passVideo; // if there was a path set the path as the video source
     }
-    video.load();
+    video.load(); // reload the video content
 }
 
+// from the video path get the video name/path without the server address attached
 function getVideoName() {
     var longVideoName = video.getAttribute("src");
     var videoName = "";
-    longVideoName = longVideoName.slice(0, -4);
+    longVideoName = longVideoName.slice(0, -4); // removed the .mp4 or .mov extention
     longVideoName = longVideoName.replace(annotationServer, "");
     if (longVideoName.includes(annotationServer)){
-        videoName = longVideoName.replace(annotationServer, "");
+        videoName = longVideoName.replace(annotationServer, ""); // if the path has the server address attached remove it
     }
     else {
         videoName = longVideoName;
@@ -1156,7 +1158,9 @@ function getVideoName() {
     return videoName;
 }
 
-
+// CHECK DATABASE
+// Check the Database for existing annotations and call the functions to recreate them in the GUI
+// this function is not currently used as the promises were not being returned in a way that fully worked with the GUI
 function checkDatabase() {
     var labelPromise = database.ref().child(videoName + '/labels/').once("value")
     .then(function(snapshot) {
@@ -1169,8 +1173,6 @@ function checkDatabase() {
     labelPromise.then(function(labels) {
         for (label in labels) {
             annotationPromise.then(function(annotations) {
-                /*labelarray.push(label);
-                colorarray.push(labels[label]);*/
                 // CONSTRUCT LABEL HERE (label is the variable for the name, labels[label] will give you the color)
                 //buildLabel(label, labels[label]); // this is just an idea to make the code neater, pass more of the variables if you need to
                 for (annotation in annotations) {
@@ -1181,21 +1183,12 @@ function checkDatabase() {
                         });
                         detailsPromise.then(function(details) {
                             // CONSTRUCT ANNOTATION HERE (using data examples below)
-                           //buildAnnotation(annotation, labels[label]);
-
+                            //buildAnnotation(annotation, labels[label]);
                             // this is just an idea to make the code neater, pass more of the variables if you need to
-                            /*
-                            console.log('annotation: ' + annotation);
-                            console.log('label: ' + label);
-                            console.log('color: ' + labels[label]);
-                            console.log('key: ' + annotations[annotation]);
-                            console.log('x: ' + details.x);
-                            console.log('y: ' + details.y);
-                            console.log('w: ' + details.w);
-                            console.log('h: ' + details.h);
-                            console.log('end: ' + details.end);
-                            console.log('start: ' + details.start);
-                            */
+
+/*  "annotation" = annotation, "label" = label, "color" = labels[label], "key" = annotations[annotation]
+    "x" = details.x, "y" = details.y, "w" = details, "h" = details.h, "end" = details.end, "start" = details.start  */
+
                         });
                     }
                 }
@@ -1203,15 +1196,17 @@ function checkDatabase() {
         }
     });
 }
-
+// called by checkDatabase to recreate labels already in the database
+// not currently used
 function buildLabel(id, color) {
 
     loadlock = true;
     submitLabel(color, id);
 }
 
+// called by checkDatabase to recreate annotations already in the database
+// not currently used
 function buildAnnotation(id, color) {
-    // Need to make sure that the numbering of new annotations starts from wherever the existing annotations finishes, not sure how best to do that.
     var index;
     var e;
 
@@ -1219,19 +1214,25 @@ function buildAnnotation(id, color) {
     createNewAnnotation(color, id, index, e)
 }
 
+// called to add a label to firebase when it is created in the GUI
 function firebaseNewLabel(label, color, videoName) {
     var updates = {};
     updates[videoName + '/labels/' + label] = color;
     return database.ref().update(updates);
 }
 
+// uses the update method to add annotation data to firebase
+// currently used when the data is added in the GUI
+// update method was chosen so this could also be called to update/change existing annotations
 function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName, color) {
     var totalHeight = canvas.offsetheight;
     var totalWidth = canvas.offsetHeight;
+    // make measurements a percentage of the width and height so they are standardized
     x = (x*100)/totalWidth;
     w = (w*100)/totalWidth;
     y = (y*100)/totalHeight;
     h = (h*100)/totalHeight;
+    // create the data format to be added to the database
     var annotationData = {
         label: labelID,
         start: startTime,
@@ -1244,21 +1245,28 @@ function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName,
         color: color,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
     };
+    // choose the locations to update and what data to place in them
     var updates = {};
     updates['/annotations/' + key] = annotationData;
     updates[videoName + '/annotations/' + labelID] = key;
+    // update and return
     return database.ref().update(updates);
 }
 
+// remove an annotation from the database based on its labelID in all locations associated with interval
+// currently used to delete an annotation from the database when it is deleted from the GUI
 function removeAnnotation(labelID) {
     console.log("starting remove")
     var labelIDRef = database.ref().child(videoName + '/annotations/' + labelID + '/');
+    // returns the key stored in video file as a promise
     var annotationPromise = database.ref().child(videoName + '/annotations/').once("value")
     .then(function(snapshot) {
         return snapshot.val()[labelID];
     });
+    // uses the key to find the annotation itself
     annotationPromise.then(function(key) {
         var annotationRef = database.ref().child('/annotations/' + key);
+        // removes the data from the  annotation/key location
         annotationRef.remove()
             .then(function() {
             console.log("Remove annotation succeeded.")
@@ -1266,7 +1274,10 @@ function removeAnnotation(labelID) {
             .catch(function(error) {
             console.log("Remove annotation failed: " + error.message)
         });
-    })
+    })  // waits for the promise to return so that we know the data has been removed from the first location
+        // then removes the data from the  videoName/annotations/key location
+        // (NOTE: it might be better to move this to the succcess outcome for the previous remove function
+        // then there is no risk of deleting only half the data and corrupting the database)
         .then(function() {
         labelIDRef.remove()
             .then(function() {
@@ -1277,7 +1288,9 @@ function removeAnnotation(labelID) {
         });
     });
 }
-
+// prints all the annotation data for the current video in an easily readable format
+// (NOTE: the promise methods work properly in this function so might be able to be used to get the
+// checkDatabase function to properly load annotations )
 function printAnnotations() {
     console.log('some space here');
     var printStatement = "Video: " + videoName + "\n\n";
@@ -1289,6 +1302,7 @@ function printAnnotations() {
             annotationKey = annotation.val();
             var detailsPromise = database.ref().child('/annotations/' + annotationKey).once("value")
             .then(function(details) {
+                // date manipulation to make it readable
                 var processedTime = new Date (details.val().timestamp);
                 var localDateString = processedTime.toLocaleDateString(undefined, {
                     day : 'numeric',
@@ -1316,13 +1330,13 @@ function printAnnotations() {
         return Promise.all(reads);
     }, function(error) {console.error(error);})
         .then(function(values) {
-        //window.alert(printStatement);
         var printArea = document.getElementById('modal-inner');
         printArea.innerText = printStatement;
         modal.style.display = "block";
     });
 }
 
+// prints all the annotation data for the current video in a CSV style format, basically the same as the previous function
 function printCSV() {
     console.log('some space here');
     var printStatement = "Video: " + videoName + "\n\nlabel,timestamp,x,y,w,h,start,end,\n\n";
@@ -1350,7 +1364,6 @@ function printCSV() {
         return Promise.all(reads);
     }, function(error) {console.error(error);})
         .then(function(values) {
-        //window.alert(printStatement);
         var printArea = document.getElementById('modal-inner');
         printArea.innerText = printStatement;
         modal.style.display = "block";
@@ -1360,16 +1373,3 @@ function printCSV() {
 span.onclick = function() {
     modal.style.display = "none";
 }
-/*function getAnnotation() {
-    var searchKey = document.getElementById("annotation-id-edit").value;
-    console.log(searchKey);
-	if (searchKey == "") {
-        return;
-    }
-    var annotationRef = database.ref().child('annotations/'+[searchKey]);
-    return annotationRef.once('value').then(function(snapshot){
-        startTimeEdit.value = snapshot.val().start;
-        endTimeEdit.value = snapshot.val().end;
-        labelEdit.value = snapshot.val().label;
-    });
-}*/
