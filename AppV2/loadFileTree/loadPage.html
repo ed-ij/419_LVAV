@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>LsVAV: Select Video</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+		<style type="text/css">
+			BODY,
+			HTML {
+				padding: 0px;
+				margin: 0px;
+			}
+			BODY {
+				font-family: Verdana, Arial, Helvetica, sans-serif;
+				font-size: 11px;
+				background: #EEE;
+				padding: 15px;
+			}
+
+			H1 {
+				font-family: Georgia, serif;
+				font-size: 20px;
+				font-weight: normal;
+			}
+
+			H2 {
+				font-family: Georgia, serif;
+				font-size: 16px;
+				font-weight: normal;
+				margin: 0px 0px 10px 0px;
+			}
+
+			.example {
+				float: left;
+				margin: 15px;
+			}
+
+			.fileTreeDiv {
+				width: 300px;
+				height: 400px;
+				border-top: solid 1px #BBB;
+				border-left: solid 1px #BBB;
+				border-bottom: solid 1px #FFF;
+				border-right: solid 1px #FFF;
+				background: #FFF;
+				overflow: scroll;
+				padding: 5px;
+			}
+
+			.videoPathDiv {
+				display: block;
+				width: 800px;
+			}
+
+		</style>
+
+		<script src="app_config.js"></script>
+		<script src="jquery.js" type="text/javascript"></script>
+		<script src="jqueryFileTree.js" type="text/javascript"></script>
+		<link href="jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
+
+		<script type="text/javascript">
+
+			$(document).ready( function() {
+
+				$('#fileTree').fileTree({ root: fileTreeServer, folderEvent: 'click', expandSpeed: 300, collapseSpeed: 300, multiFolder: true }, function(file) {
+					var videoPath = document.getElementById("videoPath");
+            		videoPath.value = file.replace(fileTreeServer, annotationServer);
+				});
+
+			});
+		</script>
+
+	</head>
+
+	<body>
+
+		<h1>Server File Tree</h1>
+		<p>
+			Please select the video you would like to annotate
+		</p>
+
+		<div class="example">
+			<h2>Choose a video from the folder tree below</h2>
+			<div id="fileTree" class="fileTreeDiv"></div>
+		</div>
+		<div style="display: block; position: fixed; top: 560px; left: 30px;">
+			<textarea id="videoPath" class="videoPathDiv">
+			</textarea>
+			<button onclick="loadVideo()">Select</button>
+		</div>
+
+	</body>
+	<script type="text/javascript">
+		function loadVideo() {
+			var videoPath = document.getElementById("videoPath").value;
+			localStorage.setItem("videoPath", videoPath);
+			window.location.replace(annotationPageAddress);
+		}
+	</script>
+</html>

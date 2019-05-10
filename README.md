@@ -1,6 +1,6 @@
 # Large-scale Video Annotation and Visualization (LVAV)
 
-This project was commissioned to fullfill a need for an open accessible platform for flexible & manual annotation of large quantities of video footage. The specific use case being designed for is video deep learning but we are aware that there are potentially far more applications. 
+This project was commissioned to fullfill a need for an open accessible platform for flexible & manual annotation of large quantities of video footage. The specific use case being designed for is video deep learning but we are aware that there are potentially far more applications.
 
 The main objectives of the active LVAV project currently consist of developing a web app to speed up video annotation of student engagement activities (reading, writing, talking).
 
@@ -16,10 +16,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-1) Get a text editor, we recommend using [Atom](https://atom.io/) for a nice code editing experience from 
+1) Get a text editor, we recommend using [Atom](https://atom.io/) for a nice code editing experience from
 2) Install a Git revision control system, we like [GitHub Desktop](https://desktop.github.com/) for it's full GitHub compatibility and ease of use
 3) A modern browser for testing (Chrome 72 recommended, go to chrome://settings/help on chrome to find out the version you are using)
-4) Some features have to be tested remotely as for security reasons they cannot be tested locally, if think you may need to do this check out the "Setup for Testing Server Functionality" section
+4) Your own Firebase project, these can be setup at ...
+5) Some features have to be tested remotely as for security reasons they cannot be tested locally, if think you may need to do this check out the "Setup for Testing Server Functionality" section
 
 ### Installing
 
@@ -31,7 +32,7 @@ Clone the git repository
 https://github.com/edward-ij/419_LVAV.git
 ```
 
-Setup a .gitconfig file by replacing the capitalized sections and placing it in your main user area
+Setup a `.gitconfig` file by replacing the capitalized sections and placing it in your main user area
 
 ```
 [user]
@@ -39,12 +40,36 @@ Setup a .gitconfig file by replacing the capitalized sections and placing it in 
         email = <EMAIL>
 ```
 
-Setup the .gitignore file
+Setup the `.gitignore` file
 
 ```
 will include files that contain sensitive info that should not end up on GitHub
 ```
 
+Make a copy of the `app_config_template.js` file and rename it `app_config.js`
+
+```
+
+```
+
+Setup the `fileTree_config.js` file
+
+```
+
+```
+
+Set the firebase Authentication to allow anonymous sign in, then setup the Firebase Database Rules as follows:
+
+```
+{
+  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+  "rules": {
+      /* This setup allows any signed in user to access the entire database*/
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+```
 From a file browser double-click the `Release/annotate_noServer.html` to run the file
 
 ### Coding Style info
@@ -77,7 +102,7 @@ We kinda made this up to start with as we were unsure as to how many development
 
 * **Miguel Lujan** - *Software engineer & project manager with a focus on the user interface* - [GitHub](https://github.com/2Gunz)
 * **Edward Ireland-Jones** - *Software engineer with focus on Firebase integration* - [Website](https://edij.co.uk)
-* **Rachel Fulcher** - *Machine learning test engineer* - 
+* **Rachel Fulcher** - *Machine learning test engineer* -
 * **Sara Walton** - *Machine learning & ground truth engineer*
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.

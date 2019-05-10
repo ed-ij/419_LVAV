@@ -1,0 +1,4 @@
+#these files will not be synchronized between users for security reasons 
+
+*/app_config.js
+*/firebase_config.js

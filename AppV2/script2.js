@@ -68,7 +68,7 @@ var finalize;
 var btAssign;
 var endAssign;
 var check;
-var newLabelCreate = document.getElementById('new-new');    
+var newLabelCreate = document.getElementById('new-new');
 var labelContainer = document.getElementById('label-home');
 labelContainer.id = "labelContainer";
 
@@ -85,9 +85,6 @@ var annoarray = [];
 var colorarray = [];
 
 
-// for firebase integration:
-var database;
-
 canvas.className = "canvases";
 videoDiv.appendChild(canvas);       //append the canvas to the video container so that canvas has same dimensions as video
 canvas.style.position = 'relative';
@@ -101,6 +98,15 @@ var supportsVideo = !!document.createElement('video').canPlayType;
 
 if (supportsVideo) {
     init();
+    // Authorisation left anonymous, change to whatever is the most appropriate for your application
+    firebase.auth().signInAnonymously().catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+    });
+
+
     // Obtain handles to main elements
     // Hide the default controls
     video.controls = false;
@@ -289,7 +295,7 @@ if (supportsVideo) {
             progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
         });
 
-    
+
         // Listen for fullscreen change events (from other controls, e.g. right clicking on the video itself)
         document.addEventListener('fullscreenchange', function(e) {
             setFullscreenData(!!(document.fullScreen || document.fullscreenElement));
@@ -303,17 +309,17 @@ if (supportsVideo) {
         document.addEventListener('msfullscreenchange', function() {
             setFullscreenData(!!document.msFullscreenElement);
         });
-        //loadVideo();
+        loadVideo();
         videoName = getVideoName();
         console.log(videoName);
         checkDatabase();
 
         newLabel = document.getElementById('create-new');
-        
-        
-        
+
+
+
         //Create New Label is pressed.
-        newLabel.addEventListener('click', function() { 
+        newLabel.addEventListener('click', function() {
 
             if(busy1 == false)
             {
@@ -322,20 +328,20 @@ if (supportsVideo) {
             }
         });
 
-        
+
         newBox = document.getElementById('new-new'); //container holding all new labels
-        
+
         //The next few event listeners use "event delegation" since the items created are done so dynamically within the browser. if(e.target && e.target.id == "<id of element clicked>" signifies event delegation);
-        
+
         //Once name is entered, color is picked and Submit is pressed
-        newBox.addEventListener('click', function(e){ 
+        newBox.addEventListener('click', function(e){
             if(e.target && e.target.id == "submit") //Event delagation
             {
 
                 color = document.getElementById("colorPick").value;
                 label = document.getElementById("namebox").value;
 
-                loadlock = false; 
+                loadlock = false;
                 submitLabel(color, label);  //New label is made using color and label name
 
             }
@@ -344,7 +350,7 @@ if (supportsVideo) {
 
 
         //Create New Annotation is pressed
-        labelContainer.addEventListener('click', function(e) { 
+        labelContainer.addEventListener('click', function(e) {
             var num = 0;
             if(e.target && e.target.id == "addNew") //Event delegation
             {
@@ -357,7 +363,7 @@ if (supportsVideo) {
                     var numibox = document.getElementsByTagName('tot');
 
                     //Loop is for the numbers on the annotation box: skin:1, skin:2, etc.
-                    for(var i = 0; i < numibox.length; i++) { 
+                    for(var i = 0; i < numibox.length; i++) {
                         if(e.target.parentElement == numibox[i]) {
                             boxInd = i;
                         }
@@ -378,7 +384,7 @@ if (supportsVideo) {
             if(e.target && e.target.id == "finalize") {
                 busy1 = false;
                 busy2 = false;
-                
+
                 //Data is stored in database
                 finalizeNewAnno(e.target.parentElement.style.backgroundColor);
                 var dad = e.target.parentElement;
@@ -413,7 +419,7 @@ if (supportsVideo) {
         labelContainer.addEventListener('click', function(e) {
             if(e.target && e.target.name == "nabox")
             {
-                
+
                 if(busy1 == false && busy2 == false)
                 {
                     var myid = e.target.id;
@@ -428,7 +434,13 @@ if (supportsVideo) {
                             return snapshot.val();
                         })
                         .then(function(details) {
-                            showAnno(details.color, details.x, details.y, details.w, details.h, ctx);
+                            var totalHeight = canvas.offsetheight;
+                            var totalWidth = canvas.offsetHeight;
+                            var x = (details.x*totalWidth)/100;
+                            var w = (details.w*totalWidth)/100;
+                            var y = (details.y*totalHeight)/100;
+                            var h = (details.h*totalHeight)/100;
+                            showAnno(details.color, x, y, w, h, ctx);
                             video.currentTime = details.start;
                         });
                     });
@@ -438,7 +450,7 @@ if (supportsVideo) {
     }
 }
 
-//If video is clicked, progress is paused. 
+//If video is clicked, progress is paused.
 canvas.addEventListener('click', function() {
     if(video.paused == false)
         video.pause();
@@ -539,16 +551,14 @@ function submitLabel(color, label) {
 
 
     if(loadlock == true)
-    {
-        
-    }
+        {}
     else
     {
         newLabelCreate.removeChild(newButton);
         loadlock = false;
     }
 
-    
+
     caDiv.appendChild(lbText);
     caDiv.appendChild(labelnameDiv);
     createAnnotation.appendChild(caDiv);
@@ -679,8 +689,8 @@ function createNewAnnotation(color, label, index, e) {
 
 //Draw annotation box and get begin and end times
 function drawEditAnnotation() {
-    
-    
+
+
     //Set begin time
     btAssign.addEventListener('click', function(){
 
@@ -706,13 +716,13 @@ function drawEditAnnotation() {
     canvas.addEventListener('mouseover', function(){
         canvas.style.cursor = "crosshair";
     } );
-    
+
     //On canvas click to begin drawing annotation box
     canvas.addEventListener('mousedown', mouseDown);
-    
+
     //End drawing annotation box
     canvas.addEventListener('mouseup', mouseUp, false);
-    
+
     //Size annotation box
     canvas.addEventListener('mousemove', mouseMove, false);
 
@@ -1110,29 +1120,24 @@ function Annotation() {
 }
 
 // Firebase Integration Functions
+
 function init() {
     // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyAggWr9t0RNu2u5XzDSuZp85EYxB9G8tyI",
-        authDomain: "lsvav-ece420.firebaseapp.com",
-        databaseURL: "https://lsvav-ece420.firebaseio.com",
-        projectId: "lsvav-ece420",
-        storageBucket: "lsvav-ece420.appspot.com",
-        messagingSenderId: "542547803047"
-    };
     firebase.initializeApp(config);
     database = firebase.database();
     console.log("Database setup complete");
 }
 
 function loadVideo() {
-    passVideo = localStorage.getItem(videoPath);
+    if ("videoPath" in localStorage) {
+        passVideo = localStorage.getItem("videoPath");
+    }
     localStorage.setItem("videoPath", "");
     if (video.getAttribute("src") == "" && passVideo == "") {
-        window.location.replace("https://edij.co.uk/testArea/loadPage.html");
+        window.location.href = fileTreePageAddress;
     }
     else if (video.getAttribute("src") != passVideo && passVideo != "") {
-        video.setAttribute("src") = passVideo;
+        video.src = passVideo;
     }
     video.load();
 }
@@ -1141,9 +1146,9 @@ function getVideoName() {
     var longVideoName = video.getAttribute("src");
     var videoName = "";
     longVideoName = longVideoName.slice(0, -4);
-    longVideoName = longVideoName.replace("https://ece46medsrv.ece.unm.edu/", "");
-    if (longVideoName.includes("https://ece46medsrv.ece.unm.edu/")){
-        videoName = longVideoName.replace("https://ece46medsrv.ece.unm.edu/", "");
+    longVideoName = longVideoName.replace(annotationServer, "");
+    if (longVideoName.includes(annotationServer)){
+        videoName = longVideoName.replace(annotationServer, "");
     }
     else {
         videoName = longVideoName;
@@ -1162,7 +1167,7 @@ function checkDatabase() {
         return snapshot.val();
     });
     labelPromise.then(function(labels) {
-        for (label in labels) {   
+        for (label in labels) {
             annotationPromise.then(function(annotations) {
                 /*labelarray.push(label);
                 colorarray.push(labels[label]);*/
@@ -1176,8 +1181,8 @@ function checkDatabase() {
                         });
                         detailsPromise.then(function(details) {
                             // CONSTRUCT ANNOTATION HERE (using data examples below)
-                           //buildAnnotation(annotation, labels[label]); 
-                            
+                           //buildAnnotation(annotation, labels[label]);
+
                             // this is just an idea to make the code neater, pass more of the variables if you need to
                             /*
                             console.log('annotation: ' + annotation);
@@ -1221,6 +1226,12 @@ function firebaseNewLabel(label, color, videoName) {
 }
 
 function firebaseUpdate(key, labelID, startTime, endTime, x, y, w, h, videoName, color) {
+    var totalHeight = canvas.offsetheight;
+    var totalWidth = canvas.offsetHeight;
+    x = (x*100)/totalWidth;
+    w = (w*100)/totalWidth;
+    y = (y*100)/totalHeight;
+    h = (h*100)/totalHeight;
     var annotationData = {
         label: labelID,
         start: startTime,
