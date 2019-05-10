@@ -107,7 +107,7 @@ You have a few options for exporting data:
 
 ## Contributing
 
-Please branch or fork this repository with credit rather than making contributions as this is mostly no longer under development
+Please fork this repository if you want updates to happen quickly, this repository is not under active development. However if you develop a new feature or improve the software in any way feel free to create a merge request and we will consider adding it to the project.
 
 ## Team
 
