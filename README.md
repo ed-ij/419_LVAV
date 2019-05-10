@@ -116,7 +116,7 @@ Please branch or fork this repository with credit rather than making contributio
 * **Rachel Fulcher** - *Machine learning test engineer* -
 * **Sara Walton** - *Machine learning & ground truth engineer*
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/edward-ij/419_LVAV/contributors) who participated in this project.
 
 ### License
 
