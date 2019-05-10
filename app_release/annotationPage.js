@@ -311,8 +311,8 @@ if (supportsVideo) {
         });
         loadVideo();
         videoName = getVideoName();
-        console.log(videoName);
-        checkDatabase();
+        //console.log(videoName);
+        //checkDatabase();
 
         newLabel = document.getElementById('create-new');
 
